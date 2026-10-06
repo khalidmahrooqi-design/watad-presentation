@@ -51,6 +51,11 @@ test('theme, motion, dock, presentation and keyboard states persist correctly', 
   await page.keyboard.press('ArrowRight');
   await expect(page.locator('[role="progressbar"]')).toHaveAttribute('aria-valuenow', '2');
   await page.goto('ar/');
+  await page.waitForLoadState('networkidle');
+  await expect(page.getByRole('button', { name: 'تشغيل الحركة', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
   await page.keyboard.press('ArrowLeft');
   await expect(page.locator('[role="progressbar"]')).toHaveAttribute('aria-valuenow', '2');
 });
