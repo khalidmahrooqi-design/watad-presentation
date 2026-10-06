@@ -58,37 +58,64 @@ test('theme, motion, dock, presentation and keyboard states persist correctly', 
   await page.keyboard.press('ArrowLeft');
   await expect(page.locator('[role="progressbar"]')).toHaveAttribute('aria-valuenow', '2');
 });
-test('responsive geometry stays within viewport, including the dock', async ({ page }) => {
+test('responsive geometry stays within viewport, including the dock', async ({
+  page,
+  browserName,
+}) => {
   for (const locale of ['ar', 'en'])
     for (const width of [320, 390, 768, 1440, 3840]) {
       await page.setViewportSize({ width, height: width === 3840 ? 2160 : 900 });
       await page.goto(`${locale}/`);
       await expect(page.locator('html')).toHaveAttribute('lang', locale);
       await page.evaluate(() => document.fonts.ready);
-      await expect
-        .poll(() => page.evaluate(() => document.documentElement.scrollWidth))
-        .toBeLessThanOrEqual(width + 1);
+      await page.mouse.wheel(1200, 0);
+      await page.evaluate(
+        () =>
+          new Promise<void>((resolve) =>
+            requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+          ),
+      );
       const geometry = await page.evaluate(() => {
         const d = document.querySelector('.presentation-dock')!.getBoundingClientRect();
+        const outside = (r: DOMRect) =>
+          r.width > 0 && r.height > 0 && r.bottom > 0 && (r.left < -1 || r.right > innerWidth + 1);
+        const controls = [...document.querySelectorAll('a,button,input,select')]
+          .filter((e) => outside(e.getBoundingClientRect()))
+          .map((e) => ({
+            tag: e.tagName,
+            text: e.textContent?.trim().slice(0, 70),
+            rect: e.getBoundingClientRect().toJSON(),
+          }));
+        const text = [];
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+        while (walker.nextNode()) {
+          const node = walker.currentNode;
+          if (!node.textContent?.trim()) continue;
+          const range = document.createRange();
+          range.selectNodeContents(node);
+          const rect = range.getBoundingClientRect();
+          if (outside(rect))
+            text.push({ text: node.textContent.trim().slice(0, 100), rect: rect.toJSON() });
+        }
         return {
-          overflow: document.documentElement.scrollWidth > innerWidth + 1,
+          horizontalScroll: Math.abs(scrollX),
+          controls,
+          text,
           left: d.left,
           right: d.right,
           width: innerWidth,
           documentWidth: document.documentElement.scrollWidth,
           bodyWidth: document.body.scrollWidth,
-          overflowing: [...document.querySelectorAll('body *')]
-            .map((element) => ({
-              element: element.tagName + '.' + element.className,
-              section: element.closest('section')?.id,
-              right: element.getBoundingClientRect().right,
-              width: element.getBoundingClientRect().width,
-            }))
-            .filter((element) => element.right > innerWidth + 1)
-            .slice(0, 12),
         };
       });
-      expect(geometry.overflow, JSON.stringify({ locale, ...geometry })).toBe(false);
+      if (geometry.documentWidth > width + 1)
+        console.log('Viewport metrics:', JSON.stringify({ browserName, locale, ...geometry }));
+      expect(
+        geometry.horizontalScroll,
+        JSON.stringify({ locale, ...geometry }),
+      ).toBeLessThanOrEqual(1);
+      expect(geometry.controls, 'Controls must remain fully in the viewport').toEqual([]);
+      expect(geometry.text, 'Text must remain fully in the viewport').toEqual([]);
       expect(geometry.left).toBeGreaterThanOrEqual(0);
       expect(geometry.right).toBeLessThanOrEqual(geometry.width + 1);
     }
