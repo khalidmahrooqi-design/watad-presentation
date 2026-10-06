@@ -16,11 +16,21 @@ import {
   type CaseRecord,
 } from './content';
 import { Icon, type IconName } from './icons';
+import { Gallery, GalleryBrowser, galleryForCase } from './Gallery';
+import Metrics from './Metrics';
 import { nextIndex, keyboardDelta, shouldIgnoreShortcut } from './navigation.mjs';
 const Scene = lazy(() => import('./Scene'));
 export type PageProps = { locale: Locale; caseId?: string };
 
-function Photo({ item, hero = false }: { item: CaseRecord; hero?: boolean }) {
+function Photo({
+  item,
+  hero = false,
+  locale,
+}: {
+  item: CaseRecord;
+  hero?: boolean;
+  locale: Locale;
+}) {
   const widths = [
     ...new Set([
       480,
@@ -41,7 +51,7 @@ function Photo({ item, hero = false }: { item: CaseRecord; hero?: boolean }) {
       }
       width={item.width}
       height={item.height}
-      alt={`${item.name.en} — ${item.country.en}`}
+      alt={`${item.name[locale]} — ${item.country[locale]}`}
       loading={hero ? 'eager' : 'lazy'}
       fetchPriority={hero ? 'high' : 'auto'}
       decoding="async"
@@ -57,22 +67,53 @@ function Heading({ index, locale }: { index: number; locale: Locale }) {
     </div>
   );
 }
-function CaseCard({ item, locale }: { item: CaseRecord; locale: Locale }) {
+function Concept({ id, locale }: { id: string; locale: Locale }) {
+  const descriptions: Record<string, { ar: string; en: string }> = {
+    applications: {
+      ar: 'تصوّر معماري لفيلا ومباني سكنية وضيافة',
+      en: 'Architectural concept of villa, residential and hospitality applications',
+    },
+    partnership: {
+      ar: 'تصوّر لمواد الألواح في استوديو هندسي',
+      en: 'Concept material study in an engineering studio',
+    },
+    comfort: {
+      ar: 'تصوّر لمساحة سكنية مطلّة على فناء مظلّل',
+      en: 'Concept living space opening onto a shaded courtyard',
+    },
+    evidence: {
+      ar: 'تصوّر لمراجعة عينة من مواد الجدار',
+      en: 'Concept wall-material sample review',
+    },
+    comparison: {
+      ar: 'تصوّر لتخطيط مشروع مع نموذج معماري وعينات مواد',
+      en: 'Project planning concept with architectural model and material samples',
+    },
+    planning: {
+      ar: 'تصوّر لمشروع سكني في بيئة عُمانية',
+      en: 'Residential project concept in an Omani setting',
+    },
+  };
   return (
-    <a className="case-card" href={`${BASE}${locale}/cases/${item.id}/`}>
-      <div className="case-image">
-        <Photo item={item} />
-        <span className="country-label">{item.country[locale]}</span>
-      </div>
-      <div className="case-copy">
-        <p>{item.use[locale]}</p>
-        <h3>{item.name[locale]}</h3>
-        <span>
-          {ui.viewCase[locale]}
-          <Icon name="arrow" className="flow-arrow" />
-        </span>
-      </div>
-    </a>
+    <figure className={`section-concept concept-${id}`}>
+      <img
+        src={asset(`media/concept-${id}-w1600.webp`)}
+        srcSet={[480, 960, 1600]
+          .map((w) => `${asset(`media/concept-${id}-w${w}.webp`)} ${w}w`)
+          .join(', ')}
+        sizes="(max-width:760px) 92vw, 85vw"
+        width="1600"
+        height="900"
+        loading="lazy"
+        decoding="async"
+        alt={descriptions[id][locale]}
+      />
+      <figcaption>
+        {locale === 'ar'
+          ? 'تصوّر معماري مولّد — صورة توضيحية'
+          : 'Generated architectural concept — illustrative image'}
+      </figcaption>
+    </figure>
   );
 }
 function Flag({ country, locale }: { country: 'om' | 'it'; locale: Locale }) {
@@ -223,7 +264,6 @@ export default function App({ locale, caseId }: PageProps) {
   const [element, setElement] = useState('single');
   const [stage, setStage] = useState(2);
   const [roof, setRoof] = useState(0.8);
-  const [country, setCountry] = useState('all');
   const moving = useRef(false);
   const navigationTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const noticeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -288,6 +328,7 @@ export default function App({ locale, caseId }: PageProps) {
       const target = document.getElementById(sections[next].id);
       if (!target) return;
       moving.current = true;
+      currentRef.current = next;
       setCurrent(next);
       setMenu(false);
       clearTimeout(navigationTimer.current);
@@ -297,7 +338,7 @@ export default function App({ locale, caseId }: PageProps) {
         () => {
           moving.current = false;
         },
-        motion ? 30 : 1300,
+        motion ? 30 : 2500,
       );
     },
     [localCase, motion],
@@ -329,7 +370,15 @@ export default function App({ locale, caseId }: PageProps) {
     const scroll = () => {
       if (!frame) frame = requestAnimationFrame(update);
     };
+    const settled = () => {
+      moving.current = false;
+      clearTimeout(navigationTimer.current);
+      update();
+    };
     window.addEventListener('scroll', scroll, { passive: true });
+    window.addEventListener('scrollend', settled);
+    window.addEventListener('wheel', settled, { passive: true });
+    window.addEventListener('touchstart', settled, { passive: true });
     update();
     const hash = () => {
       const index = sections.findIndex((s) => s.id === location.hash.slice(1));
@@ -339,12 +388,18 @@ export default function App({ locale, caseId }: PageProps) {
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener('scroll', scroll);
+      window.removeEventListener('scrollend', settled);
+      window.removeEventListener('wheel', settled);
+      window.removeEventListener('touchstart', settled);
       window.removeEventListener('hashchange', hash);
     };
   }, [go, localCase]);
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
-      if (e.altKey || e.ctrlKey || e.metaKey || shouldIgnoreShortcut(e.target)) return;
+      if (e.altKey || e.ctrlKey || e.metaKey) return;
+      const target = e.target as HTMLElement;
+      if (target.closest('textarea,select,input:not([type="range"]),[contenteditable="true"]'))
+        return;
       if (e.key === 'Escape') {
         setMenu(false);
         setHelp(false);
@@ -366,6 +421,7 @@ export default function App({ locale, caseId }: PageProps) {
         void toggleFull();
         return;
       }
+      if (shouldIgnoreShortcut(e.target) || e.defaultPrevented) return;
       const delta = keyboardDelta(e.key, rtl);
       if (delta && !localCase) {
         e.preventDefault();
@@ -526,10 +582,8 @@ export default function App({ locale, caseId }: PageProps) {
             {localCase.country[locale]} · {localCase.use[locale]}
           </p>
           <h1>{localCase.name[locale]}</h1>
-          <figure className="case-detail-photo">
-            <Photo item={localCase} hero />
-            <figcaption>{localCase.caption[locale]}</figcaption>
-          </figure>
+          <Gallery collection={galleryForCase(localCase.id)} locale={locale} />
+          <p className="small-note">{localCase.caption[locale]}</p>
           <div className="case-context">
             <span>{localCase.region === 'oman' ? ui.local[locale] : ui.international[locale]}</span>
             <a className="pill primary" href={contactHref}>
@@ -601,7 +655,7 @@ export default function App({ locale, caseId }: PageProps) {
           </div>
           <figure className="hero-visual">
             <div className="hero-photo">
-              <Photo item={cases[0]} hero />
+              <Photo item={cases[0]} hero locale={locale} />
             </div>
             <div className="hero-caption">
               <Icon name="home" />
@@ -623,9 +677,18 @@ export default function App({ locale, caseId }: PageProps) {
         </section>
         <section id="applications" className="section" data-accent="mint">
           <Heading index={1} locale={locale} />
+          <Concept id="applications" locale={locale} />
           <div className="audience-grid">
             {audiences.map((a) => (
-              <a key={a.target} className="audience-card" href={`#${a.target}`}>
+              <a
+                key={a.target}
+                className="audience-card"
+                href={`#${a.target}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  go(sections.findIndex((section) => section.id === a.target));
+                }}
+              >
                 <Icon name={a.icon as IconName} />
                 <h3>{a.title[locale]}</h3>
                 <p>{a.body[locale]}</p>
@@ -636,6 +699,7 @@ export default function App({ locale, caseId }: PageProps) {
         </section>
         <section id="partnership" className="section partnership" data-accent="azure">
           <Heading index={2} locale={locale} />
+          <Concept id="partnership" locale={locale} />
           <div className="partnership-stage">
             <div className="partner-end">
               <Flag country="it" locale={locale} />
@@ -774,6 +838,7 @@ export default function App({ locale, caseId }: PageProps) {
         </section>
         <section id="comfort" className="section comfort" data-accent="azure">
           <Heading index={6} locale={locale} />
+          <Concept id="comfort" locale={locale} />
           <div className="comfort-grid">
             <article>
               <Icon name="heat" />
@@ -826,13 +891,20 @@ export default function App({ locale, caseId }: PageProps) {
               <span>{locale === 'ar' ? 'فتحات' : 'Openings'}</span>
               <span>{locale === 'ar' ? 'سلالم' : 'Stairs'}</span>
             </div>
-            <a className="pill" href={`${BASE}${locale}/cases/saudi-chalet/`}>
+            <a
+              className="pill"
+              href="#international-cases"
+              onClick={(e) => {
+                e.preventDefault();
+                go(11);
+              }}
+            >
               {ui.viewCase[locale]}
               <Icon name="arrow" className="flow-arrow" />
             </a>
           </div>
           <figure className="architectural-image">
-            <Photo item={cases[2]} />
+            <Photo item={cases[2]} locale={locale} />
             <figcaption>
               {cases[2].country[locale]} · {ui.international[locale]}
             </figcaption>
@@ -840,6 +912,7 @@ export default function App({ locale, caseId }: PageProps) {
         </section>
         <section id="performance-evidence" className="section" data-accent="amber">
           <Heading index={8} locale={locale} />
+          <Concept id="evidence" locale={locale} />
           <div className="evidence-grid">
             {[
               biText(
@@ -875,6 +948,8 @@ export default function App({ locale, caseId }: PageProps) {
         </section>
         <section id="project-comparison" className="section comparison" data-accent="amber">
           <Heading index={9} locale={locale} />
+          <Concept id="comparison" locale={locale} />
+          <Metrics locale={locale} />
           <div className="comparison-table" role="table" aria-label={sections[9].title[locale]}>
             <div role="row" className="table-header">
               <span role="columnheader">{locale === 'ar' ? 'قارن' : 'Compare'}</span>
@@ -923,13 +998,7 @@ export default function App({ locale, caseId }: PageProps) {
         </section>
         <section id="oman-cases" className="section" data-accent="mint">
           <Heading index={10} locale={locale} />
-          <div className="local-case-grid">
-            {cases
-              .filter((c) => c.region === 'oman')
-              .map((c) => (
-                <CaseCard key={c.id} item={c} locale={locale} />
-              ))}
-          </div>
+          <GalleryBrowser locale={locale} region="oman" />
         </section>
         <section id="international-cases" className="section global" data-accent="violet">
           <Heading index={11} locale={locale} />
@@ -941,35 +1010,11 @@ export default function App({ locale, caseId }: PageProps) {
             loading="lazy"
             alt={
               locale === 'ar'
-                ? 'خريطة مواقع البلدان الواردة في العرض: عُمان وإيطاليا والسعودية وقطر والفلبين وبنما'
-                : 'Map of the countries featured in the presentation: Oman, Italy, Saudi Arabia, Qatar, Philippines and Panama'
+                ? 'خريطة تقريبية للدول الثماني عشرة الممثلة في مكتبة الصور'
+                : 'Approximate map of the eighteen countries represented in the photo library'
             }
           />
-          <div
-            className="country-filter"
-            role="group"
-            aria-label={locale === 'ar' ? 'تصفية حسب الدولة' : 'Filter by country'}
-          >
-            <button aria-pressed={country === 'all'} onClick={() => setCountry('all')}>
-              {ui.all[locale]}
-            </button>
-            {cases
-              .filter((c) => c.region === 'international')
-              .map((c) => (
-                <button key={c.id} aria-pressed={country === c.id} onClick={() => setCountry(c.id)}>
-                  {c.country[locale]}
-                </button>
-              ))}
-          </div>
-          <div className="international-grid">
-            {cases
-              .filter(
-                (c) => c.region === 'international' && (country === 'all' || c.id === country),
-              )
-              .map((c) => (
-                <CaseCard key={c.id} item={c} locale={locale} />
-              ))}
-          </div>
+          <GalleryBrowser locale={locale} region="international" />
           <p className="reference-note">{ui.international[locale]} · Emmedue</p>
         </section>
         <section id="sustainability" className="section sustainability" data-accent="mint">
@@ -1033,6 +1078,7 @@ export default function App({ locale, caseId }: PageProps) {
         </section>
         <section id="start-your-project" className="section start" data-accent="azure">
           <Heading index={13} locale={locale} />
+          <Concept id="planning" locale={locale} />
           <div className="brief-steps">
             {[
               biText(

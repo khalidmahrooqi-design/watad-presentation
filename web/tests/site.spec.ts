@@ -78,14 +78,28 @@ test('responsive geometry stays within viewport, including the dock', async ({ p
       expect(geometry.right).toBeLessThanOrEqual(geometry.width + 1);
     }
 });
-test('case filters, case routes, FAQ and local sliders work', async ({ page }) => {
+test('all case collections stay on the page with arrows and nearby previews', async ({ page }) => {
   await page.goto('en/');
-  await page.locator('#international-cases').scrollIntoViewIfNeeded();
-  await page.getByRole('button', { name: 'Philippines', exact: true }).click();
-  await expect(page.locator('.international-grid .case-card')).toHaveCount(1);
-  await page.locator('.international-grid .case-card').click();
-  await expect(page).toHaveURL(/en\/cases\/philippines-restaurant\//);
+  const international = page.locator('#international-cases');
+  await international.scrollIntoViewIfNeeded();
+  await international.getByRole('combobox', { name: 'Choose country' }).selectOption('ph');
+  await international
+    .getByRole('combobox', { name: 'Choose photo collection' })
+    .selectOption({ label: 'Meisters Uncorked, Laguna · Philippines · 15' });
+  await expect(international.locator('.gallery-main')).toHaveClass(/loaded/);
+  const original = await international.locator('.gallery-main').getAttribute('src');
+  await international.getByRole('button', { name: 'Next photo', exact: true }).click();
+  await expect(international.locator('.gallery-main')).not.toHaveAttribute('src', original!);
+  await expect(international.locator('.gallery-controls')).toContainText('2 / 15');
+  await international.getByRole('button', { name: 'Show photo 4', exact: true }).click();
+  await expect(international.locator('.gallery-controls')).toContainText('4 / 15');
+  await international.getByRole('button', { name: 'Previous photo', exact: true }).click();
+  await expect(international.locator('.gallery-controls')).toContainText('3 / 15');
+  await expect(page).toHaveURL(/en\/$/);
+  expect(await international.locator('a[href^="http"]').count()).toBe(0);
+  await page.goto('en/cases/philippines-restaurant/');
   await expect(page.locator('h1')).toContainText('Laguna');
+  await expect(page.locator('.gallery-main')).toHaveClass(/loaded/);
   await page.getByRole('link', { name: 'Back to presentation' }).click();
   await expect(page.locator('section')).toHaveCount(15);
   await page.locator('details').first().locator('summary').click();
@@ -94,7 +108,7 @@ test('case filters, case routes, FAQ and local sliders work', async ({ page }) =
   await range.scrollIntoViewIfNeeded();
   await range.focus();
   const initial = await range.inputValue();
-  await page.keyboard.press('ArrowRight');
+  await range.press('ArrowRight');
   expect(await range.inputValue()).not.toBe(initial);
 });
 test('no-JavaScript and reduced-motion versions retain content', async ({ browser }) => {
@@ -192,4 +206,149 @@ test('a model request failure retains the image and contact route', async ({
   await expect(s.locator('[data-scene-status]')).toHaveAttribute('data-scene-status', 'error');
   await expect(s.locator('.model-poster')).toBeVisible();
   await expect(page.locator('#contact-card a[href^="mailto:"]').first()).toBeAttached();
+});
+
+test('model endpoints remain reversible, including the lifted roof', async ({
+  page,
+  browserName,
+}) => {
+  test.skip(browserName !== 'chromium', 'GPU snapshots use Chromium and actual Edge.');
+  await page.goto('en/');
+  await page.getByRole('button', { name: 'Pause motion', exact: true }).click();
+  for (const [id, name] of [
+    ['system-layers', 'Separate layers'],
+    ['sustainability', 'Lift the roof'],
+  ]) {
+    const section = page.locator('#' + id);
+    await section.scrollIntoViewIfNeeded();
+    await section.getByRole('button', { name: 'Explore in 3D', exact: true }).click();
+    await expect(section.locator('[data-scene-status]')).toHaveAttribute(
+      'data-scene-status',
+      'ready',
+    );
+    const range = section.getByRole('slider', { name });
+    await range.press('End');
+    await expect(range).toHaveValue('100');
+    const end = await section.locator('canvas').screenshot();
+    await range.press('Home');
+    await expect(range).toHaveValue('0');
+    const start = await section.locator('canvas').screenshot();
+    expect(end.equals(start), id + ' must move back from its endpoint').toBe(false);
+    await range.press('End');
+    const repeat = await section.locator('canvas').screenshot();
+    expect(repeat.equals(start), id + ' must reopen').toBe(false);
+    await section.getByRole('button', { name: 'Close', exact: true }).click();
+  }
+});
+test('retry recovers a failed model, global H still works after local focus', async ({
+  page,
+  browserName,
+}) => {
+  test.skip(browserName !== 'chromium', 'The common scene boundary is covered in GPU browsers.');
+  await page.route('**/models/panel.glb', (route) => route.abort());
+  await page.goto('en/');
+  const section = page.locator('#system-layers');
+  await section.scrollIntoViewIfNeeded();
+  await section.getByRole('button', { name: 'Explore in 3D', exact: true }).click();
+  await expect(section.locator('[data-scene-status]')).toHaveAttribute(
+    'data-scene-status',
+    'error',
+  );
+  await page.unroute('**/models/panel.glb');
+  await section.getByRole('button', { name: 'Retry model' }).click();
+  await expect(section.locator('[data-scene-status]')).toHaveAttribute(
+    'data-scene-status',
+    'ready',
+  );
+  await section.getByRole('button', { name: 'Reset view' }).focus();
+  await page.keyboard.press('h');
+  await expect(page.locator('.presentation-dock')).toHaveCount(0);
+  await page.keyboard.press('h');
+  await expect(page.locator('.presentation-dock')).toHaveCount(1);
+  await expect(page.locator('canvas')).toHaveCount(1);
+});
+test('comparison charts preserve source, units and selectable range', async ({ page }) => {
+  await page.goto('en/');
+  const s = page.locator('#project-comparison');
+  await s.scrollIntoViewIfNeeded();
+  await expect(s.locator('.time-donut')).toHaveAttribute('aria-label', /70 units.*30% saved/);
+  await s.getByRole('button', { name: '40%', exact: true }).click();
+  await expect(s.locator('.time-donut')).toHaveAttribute('aria-label', /60 units.*40% saved/);
+  await expect(s.locator('.metric-source')).toContainText('January 2025');
+  await expect(s.locator('.metric-grid')).toContainText('Including construction-time savings');
+  await expect(s.locator('.small-note')).toContainText('not actual days');
+  await expect(page.locator('.section-concept')).toHaveCount(6);
+});
+
+test('gallery recovers failed manifests and photos without leaving the page', async ({ page }) => {
+  await page.route('**/galleries/*.json', (route) => route.abort());
+  await page.goto('en/');
+  const gallery = page.locator('#oman-cases .gallery');
+  await gallery.scrollIntoViewIfNeeded();
+  await expect(gallery.getByRole('button', { name: 'Retry', exact: true })).toBeVisible();
+  await page.unroute('**/galleries/*.json');
+  await page.route('**/media/gallery/*-w*.webp*', (route) => route.abort());
+  await gallery.getByRole('button', { name: 'Retry', exact: true }).click();
+  await expect(gallery.locator('.gallery-main')).toHaveCount(1);
+  await expect(gallery.getByRole('button', { name: 'Retry', exact: true })).toBeVisible();
+  await page.unroute('**/media/gallery/*-w*.webp*');
+  await gallery.getByRole('button', { name: 'Retry', exact: true }).click();
+  await expect(gallery.locator('.gallery-main')).toHaveClass(/loaded/);
+  await expect(gallery.getByRole('button', { name: 'Retry', exact: true })).toHaveCount(0);
+  await expect(page).toHaveURL(/\/en\/$/);
+});
+
+test('element selection, construction stages and rotation redraw cleanly', async ({
+  page,
+  browserName,
+}) => {
+  test.skip(browserName !== 'chromium', 'Visual GPU checks run on Chromium and actual Edge.');
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.goto('en/');
+  await page.getByRole('button', { name: 'Pause motion', exact: true }).click();
+  const elements = page.locator('#elements');
+  await elements.locator('.model-frame').scrollIntoViewIfNeeded();
+  await elements.getByRole('button', { name: 'Explore in 3D', exact: true }).click();
+  await expect(elements.locator('[data-scene-status]')).toHaveAttribute(
+    'data-scene-status',
+    'ready',
+  );
+  let prior = await elements.locator('canvas').screenshot();
+  const buttons = elements.locator('.element-selector button');
+  for (let i = 1; i < (await buttons.count()); i++) {
+    await buttons.nth(i).click();
+    await expect(buttons.nth(i)).toHaveAttribute('aria-pressed', 'true');
+    await elements.locator('canvas').scrollIntoViewIfNeeded();
+    const next = await elements.locator('canvas').screenshot();
+    expect(next.equals(prior), 'Selected element must change').toBe(false);
+    prior = next;
+  }
+  const canvas = elements.locator('canvas');
+  const box = (await canvas.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width * 0.7, box.y + box.height / 2, { steps: 10 });
+  await page.mouse.up();
+  const rotated = await canvas.screenshot();
+  expect(rotated.equals(prior)).toBe(false);
+  await elements.getByRole('button', { name: 'Reset view' }).click();
+  expect((await canvas.screenshot()).equals(rotated)).toBe(false);
+  const process = page.locator('#construction-process');
+  await process.locator('.model-frame').scrollIntoViewIfNeeded();
+  await process.getByRole('button', { name: 'Explore in 3D', exact: true }).click();
+  await expect(process.locator('[data-scene-status]')).toHaveAttribute(
+    'data-scene-status',
+    'ready',
+  );
+  const stages = process.locator('.stage-buttons button');
+  await stages.last().click();
+  await process.locator('canvas').scrollIntoViewIfNeeded();
+  const finish = await process.locator('canvas').screenshot();
+  await stages.first().click();
+  await process.locator('canvas').scrollIntoViewIfNeeded();
+  const foundation = await process.locator('canvas').screenshot();
+  expect(finish.equals(foundation)).toBe(false);
+  await expect(page.locator('canvas')).toHaveCount(1);
+  expect(errors).toEqual([]);
 });

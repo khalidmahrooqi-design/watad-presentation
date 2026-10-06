@@ -77,7 +77,36 @@ const scanImages = async (dir) => {
   }
 };
 await scanImages(root);
-if (bytes > 100 * 1024 * 1024) errors.push('Site exceeds the initial 100 MB budget');
+// The full 639-photo library is lazy loaded; this is the deployment artifact budget.
+if (bytes > 350 * 1024 * 1024) errors.push('Site exceeds the 350 MB full-library budget');
+const collections = JSON.parse(await fs.readFile('src/gallery-data.json', 'utf8'));
+let photos = 0;
+const photoIds = new Set();
+for (const collection of collections) {
+  const gallery = JSON.parse(
+    await fs.readFile(path.join(root, 'galleries', collection.id + '.json'), 'utf8'),
+  );
+  if (gallery.id !== collection.id || gallery.images.length !== collection.count)
+    errors.push('Gallery mismatch: ' + collection.id);
+  for (const photo of gallery.images) {
+    photos++;
+    if (photoIds.has(photo.id)) errors.push('Duplicate gallery ID: ' + photo.id);
+    photoIds.add(photo.id);
+    for (const src of [photo.src, photo.thumb, ...photo.srcSet.map((s) => s.src)]) {
+      if (!src.startsWith('media/gallery/') || !src.endsWith('.webp') || src.includes('..'))
+        errors.push('Invalid gallery asset: ' + src);
+      try {
+        await fs.access(path.join(root, src));
+      } catch {
+        errors.push('Missing gallery asset: ' + src);
+      }
+    }
+    if (!(photo.width > 0 && photo.height > 0))
+      errors.push('Invalid image dimensions: ' + photo.id);
+  }
+}
+if (photos !== 639) errors.push('Expected 639 gallery photos, got ' + photos);
+console.log('Gallery coverage: ' + photos + ' photos in ' + collections.length + ' collections.');
 if (errors.length) {
   console.error(errors.join('\n'));
   process.exit(1);

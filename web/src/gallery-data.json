@@ -1,0 +1,677 @@
+[
+  {
+    "id": "collection-a9191f6a39",
+    "countryCode": "reference",
+    "country": {
+      "ar": "مراجع متنوعة",
+      "en": "Mixed references"
+    },
+    "name": {
+      "ar": "مجموعة تفاصيل النظام",
+      "en": "System detail collection"
+    },
+    "region": "international",
+    "count": 38,
+    "cover": "media/gallery/222f1a9f5bccf144-thumb.webp"
+  },
+  {
+    "id": "collection-c41520249e",
+    "countryCode": "bo",
+    "country": {
+      "ar": "بوليفيا",
+      "en": "Bolivia"
+    },
+    "name": {
+      "ar": "كوران كوراني",
+      "en": "Curan Curani"
+    },
+    "region": "international",
+    "count": 5,
+    "cover": "media/gallery/51031ca283a63d28-thumb.webp"
+  },
+  {
+    "id": "collection-691f47fd3f",
+    "countryCode": "bo",
+    "country": {
+      "ar": "بوليفيا",
+      "en": "Bolivia"
+    },
+    "name": {
+      "ar": "غرين تاور",
+      "en": "Green Tower"
+    },
+    "region": "international",
+    "count": 3,
+    "cover": "media/gallery/9c7156848171fab4-thumb.webp"
+  },
+  {
+    "id": "collection-b558e4d2b8",
+    "countryCode": "bo",
+    "country": {
+      "ar": "بوليفيا",
+      "en": "Bolivia"
+    },
+    "name": {
+      "ar": "توري ألاس",
+      "en": "Torre Alas"
+    },
+    "region": "international",
+    "count": 6,
+    "cover": "media/gallery/80bac737961355e1-thumb.webp"
+  },
+  {
+    "id": "collection-08368bed9a",
+    "countryCode": "co",
+    "country": {
+      "ar": "كولومبيا",
+      "en": "Colombia"
+    },
+    "name": {
+      "ar": "فيلا أريستيزابال",
+      "en": "Aristizabal villa"
+    },
+    "region": "international",
+    "count": 7,
+    "cover": "media/gallery/a57d1ab15c2fa129-thumb.webp"
+  },
+  {
+    "id": "collection-5d032875ae",
+    "countryCode": "cg",
+    "country": {
+      "ar": "الكونغو",
+      "en": "Congo"
+    },
+    "name": {
+      "ar": "تطبيقات سكنية",
+      "en": "Residential collection"
+    },
+    "region": "international",
+    "count": 5,
+    "cover": "media/gallery/37951bc1d55b4fa2-thumb.webp"
+  },
+  {
+    "id": "collection-603ee0484e",
+    "countryCode": "do",
+    "country": {
+      "ar": "جمهورية الدومينيكان",
+      "en": "Dominican Republic"
+    },
+    "name": {
+      "ar": "مبنى صناعي",
+      "en": "Industrial building"
+    },
+    "region": "international",
+    "count": 4,
+    "cover": "media/gallery/fbc9b6bf1d7d9f85-thumb.webp"
+  },
+  {
+    "id": "collection-c997af343b",
+    "countryCode": "do",
+    "country": {
+      "ar": "جمهورية الدومينيكان",
+      "en": "Dominican Republic"
+    },
+    "name": {
+      "ar": "مبنى خوان دوليو",
+      "en": "Juan Dolio building"
+    },
+    "region": "international",
+    "count": 5,
+    "cover": "media/gallery/eac3b359d9432fd7-thumb.webp"
+  },
+  {
+    "id": "collection-713f483efb",
+    "countryCode": "do",
+    "country": {
+      "ar": "جمهورية الدومينيكان",
+      "en": "Dominican Republic"
+    },
+    "name": {
+      "ar": "فندق بويرتو بلازا",
+      "en": "Puerto Plaza hotel"
+    },
+    "region": "international",
+    "count": 10,
+    "cover": "media/gallery/fe1af3a9db4a4c73-thumb.webp"
+  },
+  {
+    "id": "collection-889d8aa41b",
+    "countryCode": "ec",
+    "country": {
+      "ar": "الإكوادور",
+      "en": "Ecuador"
+    },
+    "name": {
+      "ar": "مبنى بيافي، كيتو",
+      "en": "Piave building, Quito"
+    },
+    "region": "international",
+    "count": 6,
+    "cover": "media/gallery/15daeaff988ee18e-thumb.webp"
+  },
+  {
+    "id": "collection-7683580985",
+    "countryCode": "ec",
+    "country": {
+      "ar": "الإكوادور",
+      "en": "Ecuador"
+    },
+    "name": {
+      "ar": "هوليداي إن إكسبريس، كيتو",
+      "en": "Holiday Inn Express Quito"
+    },
+    "region": "international",
+    "count": 5,
+    "cover": "media/gallery/096da994ff4c5791-thumb.webp"
+  },
+  {
+    "id": "collection-647527b2d7",
+    "countryCode": "ec",
+    "country": {
+      "ar": "الإكوادور",
+      "en": "Ecuador"
+    },
+    "name": {
+      "ar": "فيلا مانتا",
+      "en": "Manta villa"
+    },
+    "region": "international",
+    "count": 5,
+    "cover": "media/gallery/e5083bf6f00df5b6-thumb.webp"
+  },
+  {
+    "id": "collection-557c1599d9",
+    "countryCode": "eg",
+    "country": {
+      "ar": "مصر",
+      "en": "Egypt"
+    },
+    "name": {
+      "ar": "مجموعة مصر",
+      "en": "Egypt collection"
+    },
+    "region": "international",
+    "count": 6,
+    "cover": "media/gallery/9628c0865c28cbf7-thumb.webp"
+  },
+  {
+    "id": "collection-18d4e17076",
+    "countryCode": "ir",
+    "country": {
+      "ar": "إيران",
+      "en": "Iran"
+    },
+    "name": {
+      "ar": "مجموعة إيران",
+      "en": "Iran collection"
+    },
+    "region": "international",
+    "count": 4,
+    "cover": "media/gallery/4f94219f61bcb639-thumb.webp"
+  },
+  {
+    "id": "collection-ded19d3b9c",
+    "countryCode": "it",
+    "country": {
+      "ar": "إيطاليا",
+      "en": "Italy"
+    },
+    "name": {
+      "ar": "مجموعة ميلانو",
+      "en": "Milan collection"
+    },
+    "region": "international",
+    "count": 6,
+    "cover": "media/gallery/a275225118919123-thumb.webp"
+  },
+  {
+    "id": "collection-8e077eb104",
+    "countryCode": "it",
+    "country": {
+      "ar": "إيطاليا",
+      "en": "Italy"
+    },
+    "name": {
+      "ar": "قصر الرياضة، ريميني",
+      "en": "Sport Palace, Rimini"
+    },
+    "region": "international",
+    "count": 5,
+    "cover": "media/gallery/482943a6ccfe4931-thumb.webp"
+  },
+  {
+    "id": "collection-bf34f654e8",
+    "countryCode": "in",
+    "country": {
+      "ar": "الهند",
+      "en": "India"
+    },
+    "name": {
+      "ar": "مجموعة الهند",
+      "en": "India collection"
+    },
+    "region": "international",
+    "count": 11,
+    "cover": "media/gallery/958b03d8f3c36c42-thumb.webp"
+  },
+  {
+    "id": "collection-1907363b96",
+    "countryCode": "my",
+    "country": {
+      "ar": "ماليزيا",
+      "en": "Malaysia"
+    },
+    "name": {
+      "ar": "حرم جامعة يوني ماب، برليس",
+      "en": "UniMAP campus, Perlis"
+    },
+    "region": "international",
+    "count": 20,
+    "cover": "media/gallery/d7f2ad34d69dec05-thumb.webp"
+  },
+  {
+    "id": "collection-2394bdb5e3",
+    "countryCode": "om",
+    "country": {
+      "ar": "عُمان",
+      "en": "Oman"
+    },
+    "name": {
+      "ar": "مراحل التنفيذ في عُمان",
+      "en": "Oman site collection"
+    },
+    "region": "oman",
+    "count": 4,
+    "cover": "media/gallery/077034411bb7351a-thumb.webp"
+  },
+  {
+    "id": "collection-de7b40dd9a",
+    "countryCode": "om",
+    "country": {
+      "ar": "عُمان",
+      "en": "Oman"
+    },
+    "name": {
+      "ar": "فيلا في الأنصب",
+      "en": "Villa in Al Ansab"
+    },
+    "region": "oman",
+    "count": 22,
+    "cover": "media/gallery/695442937440af49-thumb.webp"
+  },
+  {
+    "id": "collection-d9daf47524",
+    "countryCode": "pa",
+    "country": {
+      "ar": "بنما",
+      "en": "Panama"
+    },
+    "name": {
+      "ar": "بايسايد كوندومينيوم",
+      "en": "Bayside Condominium"
+    },
+    "region": "international",
+    "count": 8,
+    "cover": "media/gallery/d2019c8de77c9dc1-thumb.webp"
+  },
+  {
+    "id": "collection-323d83ebc3",
+    "countryCode": "pa",
+    "country": {
+      "ar": "بنما",
+      "en": "Panama"
+    },
+    "name": {
+      "ar": "منتجع دريمز بلايا بونيتا",
+      "en": "Dreams Resort Playa Bonita"
+    },
+    "region": "international",
+    "count": 13,
+    "cover": "media/gallery/b77f279d82cd7d10-thumb.webp"
+  },
+  {
+    "id": "collection-9c4e518573",
+    "countryCode": "pa",
+    "country": {
+      "ar": "بنما",
+      "en": "Panama"
+    },
+    "name": {
+      "ar": "مركز فيغالي للمؤتمرات",
+      "en": "Figali Convention Center"
+    },
+    "region": "international",
+    "count": 5,
+    "cover": "media/gallery/c98de25bea89fda8-thumb.webp"
+  },
+  {
+    "id": "collection-6d7c1d0578",
+    "countryCode": "pa",
+    "country": {
+      "ar": "بنما",
+      "en": "Panama"
+    },
+    "name": {
+      "ar": "فلل في بنما",
+      "en": "Panama villa collection"
+    },
+    "region": "international",
+    "count": 11,
+    "cover": "media/gallery/224a5a3f88097592-thumb.webp"
+  },
+  {
+    "id": "collection-20a1cc4d9a",
+    "countryCode": "ph",
+    "country": {
+      "ar": "الفلبين",
+      "en": "Philippines"
+    },
+    "name": {
+      "ar": "مبنى صناعي",
+      "en": "Industrial building"
+    },
+    "region": "international",
+    "count": 5,
+    "cover": "media/gallery/74a5ad30b9756fa6-thumb.webp"
+  },
+  {
+    "id": "collection-5a1ff7ad80",
+    "countryCode": "ph",
+    "country": {
+      "ar": "الفلبين",
+      "en": "Philippines"
+    },
+    "name": {
+      "ar": "مايسترز أنكوركد، لاغونا",
+      "en": "Meisters Uncorked, Laguna"
+    },
+    "region": "international",
+    "count": 15,
+    "cover": "media/gallery/16b68c7f5d9e9b10-thumb.webp"
+  },
+  {
+    "id": "collection-e7a270d9d8",
+    "countryCode": "ph",
+    "country": {
+      "ar": "الفلبين",
+      "en": "Philippines"
+    },
+    "name": {
+      "ar": "فندق سفاري",
+      "en": "Safari hotel"
+    },
+    "region": "international",
+    "count": 22,
+    "cover": "media/gallery/29c21082f607f141-thumb.webp"
+  },
+  {
+    "id": "collection-55ccc5014f",
+    "countryCode": "qa",
+    "country": {
+      "ar": "قطر",
+      "en": "Qatar"
+    },
+    "name": {
+      "ar": "مجموعة قطر",
+      "en": "Qatar collection"
+    },
+    "region": "international",
+    "count": 9,
+    "cover": "media/gallery/6196468215037a18-thumb.webp"
+  },
+  {
+    "id": "collection-4c1849f3e5",
+    "countryCode": "qa",
+    "country": {
+      "ar": "قطر",
+      "en": "Qatar"
+    },
+    "name": {
+      "ar": "فيلا من طابقين",
+      "en": "Two-storey villa"
+    },
+    "region": "international",
+    "count": 5,
+    "cover": "media/gallery/32d65ebe4bef2faf-thumb.webp"
+  },
+  {
+    "id": "collection-a465819a7d",
+    "countryCode": "qa",
+    "country": {
+      "ar": "قطر",
+      "en": "Qatar"
+    },
+    "name": {
+      "ar": "حدائق المهنا، أم صلال",
+      "en": "Al Mohanna Gardens, Umm Salal"
+    },
+    "region": "international",
+    "count": 19,
+    "cover": "media/gallery/c950e757068555d3-thumb.webp"
+  },
+  {
+    "id": "collection-91a435710c",
+    "countryCode": "qa",
+    "country": {
+      "ar": "قطر",
+      "en": "Qatar"
+    },
+    "name": {
+      "ar": "فندق K108، الدوحة",
+      "en": "K108 hotel, Doha"
+    },
+    "region": "international",
+    "count": 7,
+    "cover": "media/gallery/f004fcfb5e78d3ee-thumb.webp"
+  },
+  {
+    "id": "collection-c79b97b85c",
+    "countryCode": "qa",
+    "country": {
+      "ar": "قطر",
+      "en": "Qatar"
+    },
+    "name": {
+      "ar": "مبنى سكني في الغانم القديم، الدوحة",
+      "en": "Old Al Ghanem residences, Doha"
+    },
+    "region": "international",
+    "count": 14,
+    "cover": "media/gallery/55ae1718c2d89117-thumb.webp"
+  },
+  {
+    "id": "collection-cd2ca214de",
+    "countryCode": "sa",
+    "country": {
+      "ar": "السعودية",
+      "en": "Saudi Arabia"
+    },
+    "name": {
+      "ar": "فيلا الكثيري",
+      "en": "Al Kathiri villa"
+    },
+    "region": "international",
+    "count": 44,
+    "cover": "media/gallery/42859d9bc1379804-thumb.webp"
+  },
+  {
+    "id": "collection-0113458683",
+    "countryCode": "sa",
+    "country": {
+      "ar": "السعودية",
+      "en": "Saudi Arabia"
+    },
+    "name": {
+      "ar": "مجموعة القدية والحي الدبلوماسي",
+      "en": "Al Qiddiya Diplomatic Quarter collection"
+    },
+    "region": "international",
+    "count": 33,
+    "cover": "media/gallery/234935df1b4bd537-thumb.webp"
+  },
+  {
+    "id": "collection-04ba938e75",
+    "countryCode": "sa",
+    "country": {
+      "ar": "السعودية",
+      "en": "Saudi Arabia"
+    },
+    "name": {
+      "ar": "مجمع شاليهات أليان",
+      "en": "Alian chalet complex"
+    },
+    "region": "international",
+    "count": 20,
+    "cover": "media/gallery/08af5864aa944148-thumb.webp"
+  },
+  {
+    "id": "collection-195a29a04e",
+    "countryCode": "sa",
+    "country": {
+      "ar": "السعودية",
+      "en": "Saudi Arabia"
+    },
+    "name": {
+      "ar": "مشروع GNA، الرياض",
+      "en": "GNA project, Riyadh"
+    },
+    "region": "international",
+    "count": 16,
+    "cover": "media/gallery/5a9542a03ec31e5d-thumb.webp"
+  },
+  {
+    "id": "collection-3097eadfca",
+    "countryCode": "sa",
+    "country": {
+      "ar": "السعودية",
+      "en": "Saudi Arabia"
+    },
+    "name": {
+      "ar": "مجموعة إيمانكو",
+      "en": "Imanco collection"
+    },
+    "region": "international",
+    "count": 46,
+    "cover": "media/gallery/50105da33864b2d5-thumb.webp"
+  },
+  {
+    "id": "collection-937040cd10",
+    "countryCode": "ae",
+    "country": {
+      "ar": "الإمارات",
+      "en": "UAE"
+    },
+    "name": {
+      "ar": "مجموعة الإمارات",
+      "en": "UAE collection"
+    },
+    "region": "international",
+    "count": 5,
+    "cover": "media/gallery/e20ae48feea67288-thumb.webp"
+  },
+  {
+    "id": "collection-772cf86869",
+    "countryCode": "ae",
+    "country": {
+      "ar": "الإمارات",
+      "en": "UAE"
+    },
+    "name": {
+      "ar": "فلل في العين",
+      "en": "Al Ain villa collection"
+    },
+    "region": "international",
+    "count": 66,
+    "cover": "media/gallery/f72b0d89b46b131d-thumb.webp"
+  },
+  {
+    "id": "collection-7461fb1874",
+    "countryCode": "ae",
+    "country": {
+      "ar": "الإمارات",
+      "en": "UAE"
+    },
+    "name": {
+      "ar": "فلل في أبوظبي",
+      "en": "Abu Dhabi villa collection"
+    },
+    "region": "international",
+    "count": 35,
+    "cover": "media/gallery/bebde3d0b796a1c3-thumb.webp"
+  },
+  {
+    "id": "collection-340a92b402",
+    "countryCode": "ae",
+    "country": {
+      "ar": "الإمارات",
+      "en": "UAE"
+    },
+    "name": {
+      "ar": "مدرسة في أبوظبي",
+      "en": "School, Abu Dhabi"
+    },
+    "region": "international",
+    "count": 22,
+    "cover": "media/gallery/baab189c892c4616-thumb.webp"
+  },
+  {
+    "id": "collection-9ba6969ce6",
+    "countryCode": "gb",
+    "country": {
+      "ar": "المملكة المتحدة",
+      "en": "UK"
+    },
+    "name": {
+      "ar": "فيلا فينشي",
+      "en": "Vinci villa"
+    },
+    "region": "international",
+    "count": 6,
+    "cover": "media/gallery/afcc3ad698a9a9cf-thumb.webp"
+  },
+  {
+    "id": "collection-bba12eda5c",
+    "countryCode": "us",
+    "country": {
+      "ar": "الولايات المتحدة",
+      "en": "USA"
+    },
+    "name": {
+      "ar": "سانتا روزا بيتش",
+      "en": "Santa Rosa Beach"
+    },
+    "region": "international",
+    "count": 11,
+    "cover": "media/gallery/ade5b20697b69a99-thumb.webp"
+  },
+  {
+    "id": "collection-f4fbafa7ae",
+    "countryCode": "us",
+    "country": {
+      "ar": "الولايات المتحدة",
+      "en": "USA"
+    },
+    "name": {
+      "ar": "مشروع سنايدر",
+      "en": "Snyder project"
+    },
+    "region": "international",
+    "count": 4,
+    "cover": "media/gallery/3cc6c3381296cee6-thumb.webp"
+  },
+  {
+    "id": "collection-fffa3cc6f9",
+    "countryCode": "reference",
+    "country": {
+      "ar": "مراجع متنوعة",
+      "en": "Mixed references"
+    },
+    "name": {
+      "ar": "مجموعة مراجع حول العالم",
+      "en": "Worldwide reference collection"
+    },
+    "region": "international",
+    "count": 21,
+    "cover": "media/gallery/2b967cb674c398b6-thumb.webp"
+  }
+]

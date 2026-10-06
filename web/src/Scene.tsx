@@ -32,21 +32,28 @@ export default function Scene({
     duration: number;
     apply: () => void;
   } | null>(null);
-  const inputs = useRef({ amount, stage, element });
-  inputs.current = { amount, stage, element };
+  const inputs = useRef({ amount, stage, element, paused });
+  inputs.current = { amount, stage, element, paused };
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     const host = container.current;
     if (!host) return;
+    setStatus('loading');
+    onReady(false);
     let disposed = false,
       frame = 0,
       visible = true,
-      dirty = true;
+      dirty = true,
+      loaded = false,
+      painted = false,
+      displayedAmount = amount;
     let renderer: THREE.WebGLRenderer | undefined;
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(35, 1, 0.01, 150);
     const resources: THREE.Object3D[] = [];
     let controls: OrbitControls | undefined;
+    let fitBounds: THREE.Box3 | undefined;
     const ready = () => {
       if (!disposed) {
         setStatus('ready');
@@ -63,8 +70,24 @@ export default function Scene({
     const draw = () => {
       frame = 0;
       if (!disposed && visible && !document.hidden && renderer && dirty) {
-        renderer.render(scene, camera);
+        try {
+          const target = inputs.current.amount;
+          displayedAmount = inputs.current.paused
+            ? target
+            : THREE.MathUtils.lerp(displayedAmount, target, 0.18);
+          if (Math.abs(displayedAmount - target) < 0.001) displayedAmount = target;
+          runtime.current?.apply();
+          renderer.render(scene, camera);
+          if (loaded && !painted) {
+            painted = true;
+            ready();
+          }
+        } catch (error) {
+          fail(error);
+          return;
+        }
         dirty = false;
+        if (displayedAmount !== inputs.current.amount) requestRender();
       }
     };
     const requestRender = () => {
@@ -105,19 +128,27 @@ export default function Scene({
         if (!renderer) return;
         const { width, height } = host.getBoundingClientRect();
         if (width < 1 || height < 1) return;
+        const previousAspect = camera.aspect;
         renderer.setSize(width, height, false);
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
+        if (loaded && fitBounds && Math.abs(previousAspect - camera.aspect) > 0.05) fit();
         requestRender();
       };
-      const fit = (object: THREE.Object3D) => {
-        const box = new THREE.Box3().setFromObject(object);
-        const center = box.getCenter(new THREE.Vector3());
-        const size = box.getSize(new THREE.Vector3()).length();
-        const distance = size * 1.6;
+      const fit = (object?: THREE.Object3D, bounds?: THREE.Box3) => {
+        if (bounds) fitBounds = bounds;
+        else if (object) fitBounds = new THREE.Box3().setFromObject(object);
+        if (!fitBounds) return;
+        const center = fitBounds.getCenter(new THREE.Vector3());
+        const size = fitBounds.getSize(new THREE.Vector3()).length();
+        const limitingFov = Math.min(
+          THREE.MathUtils.degToRad(camera.fov),
+          2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * camera.aspect),
+        );
+        const distance = ((size * 0.5) / Math.sin(limitingFov / 2)) * 1.15;
         camera.position
           .copy(center)
-          .add(new THREE.Vector3(distance * 0.63, distance * 0.5, distance * 0.86));
+          .add(new THREE.Vector3(0.63, 0.5, 0.86).normalize().multiplyScalar(distance));
         camera.near = 0.01;
         camera.far = Math.max(150, distance * 8);
         camera.updateProjectionMatrix();
@@ -144,17 +175,21 @@ export default function Scene({
           resources.push(root);
           const mixer = new THREE.AnimationMixer(root);
           let duration = 0;
-          gltf.animations.forEach((clip) => {
+          const actions = gltf.animations.map((clip) => {
             duration = Math.max(duration, clip.duration);
             const a = mixer.clipAction(clip);
             a.setLoop(THREE.LoopOnce, 1);
             a.clampWhenFinished = true;
             a.play();
+            return a;
           });
           let lastElement = '';
           const apply = () => {
             const p = inputs.current;
-            mixer.setTime((duration || 1) * p.amount);
+            // A clamped action pauses at its last frame. Reset it before every seek
+            // so the range remains reversible after visiting either endpoint.
+            actions.forEach((action) => action.reset().play());
+            mixer.setTime((duration || 1) * displayedAmount);
             if (model === 'building') {
               root.traverse((o) => {
                 const match = o.name.match(/^stage_(\d)_/);
@@ -175,13 +210,23 @@ export default function Scene({
                 lastElement = p.element;
               }
             }
-            requestRender();
           };
           runtime.current = { root, mixer, duration, apply };
+          loaded = true;
           apply();
-          if (model !== 'elements') fit(root);
+          if (model !== 'elements') {
+            // Frame the full motion envelope, including the fully lifted roof.
+            const saved = displayedAmount;
+            const envelope = new THREE.Box3().setFromObject(root);
+            displayedAmount = 1;
+            apply();
+            envelope.union(new THREE.Box3().setFromObject(root));
+            fit(root, envelope);
+            displayedAmount = saved;
+            apply();
+          }
           resize();
-          ready();
+          requestRender();
         },
         undefined,
         fail,
@@ -247,12 +292,13 @@ export default function Scene({
       cancelAnimationFrame(frame);
       host.replaceChildren();
     };
-    // The owned canvas is recreated only when its model changes; controls read current values.
+    // Model, language and explicit retry own the canvas; controls read current values.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [model, locale]);
+  }, [model, locale, attempt]);
   useEffect(() => {
-    runtime.current?.apply();
-  }, [amount, stage, element]);
+    // Schedule through the renderer's change listener without recreating its canvas.
+    controlsRef.current?.dispatchEvent({ type: 'change' });
+  }, [amount, stage, element, paused]);
   useEffect(() => {
     controlsRef.current?.reset();
   }, [reset]);
@@ -265,7 +311,14 @@ export default function Scene({
       <div ref={container} className="canvas-surface" />
       {status !== 'ready' && (
         <div className="scene-status" role="status">
-          {ui[status === 'error' ? 'error' : 'loading'][locale]}
+          <div>
+            {ui[status === 'error' ? 'error' : 'loading'][locale]}
+            {status === 'error' && (
+              <button className="pill" onClick={() => setAttempt((x) => x + 1)}>
+                {locale === 'ar' ? 'إعادة المحاولة' : 'Retry model'}
+              </button>
+            )}
+          </div>
         </div>
       )}
     </div>
