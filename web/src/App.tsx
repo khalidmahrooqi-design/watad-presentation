@@ -68,6 +68,8 @@ function Heading({ index, locale }: { index: number; locale: Locale }) {
   );
 }
 function Concept({ id, locale }: { id: string; locale: Locale }) {
+  const width = id === 'partnership' ? 1536 : 1600;
+  const height = id === 'partnership' ? 1024 : 900;
   const descriptions: Record<string, { ar: string; en: string }> = {
     applications: {
       ar: 'تصوّر معماري لفيلا ومباني سكنية وضيافة',
@@ -99,11 +101,11 @@ function Concept({ id, locale }: { id: string; locale: Locale }) {
       <img
         src={asset(`media/concept-${id}-w1600.webp`)}
         srcSet={[480, 960, 1600]
-          .map((w) => `${asset(`media/concept-${id}-w${w}.webp`)} ${w}w`)
+          .map((w) => `${asset(`media/concept-${id}-w${w}.webp`)} ${Math.min(w, width)}w`)
           .join(', ')}
         sizes="(max-width:760px) 92vw, 85vw"
-        width="1600"
-        height="900"
+        width={width}
+        height={height}
         loading="lazy"
         decoding="async"
         alt={descriptions[id][locale]}

@@ -1,9 +1,21 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import sharp from 'sharp';
 const root = path.resolve('dist');
 let errors = [];
 let bytes = 0;
 let count = 0;
+const checkedWidths = new Map();
+async function checkWidth(src, width) {
+  const file = path.join(root, src.replace(/^\/watad-presentation\//, ''));
+  let actual = checkedWidths.get(file);
+  if (!actual) {
+    actual = (await sharp(file).metadata()).width;
+    checkedWidths.set(file, actual);
+  }
+  if (actual !== width)
+    errors.push(`Image width descriptor ${width} differs from ${actual}: ${src}`);
+}
 async function walk(dir) {
   for (const e of await fs.readdir(dir, { withFileTypes: true })) {
     const file = path.join(dir, e.name);
@@ -20,6 +32,12 @@ async function walk(dir) {
         if (/\/(?:Users|home)\/[\w.-]+\//.test(text) || /OneDrive-[\w-]+\//.test(text))
           errors.push(`Private path in ${rel}`);
         if (rel.endsWith('index.html')) {
+          for (const set of text.matchAll(/srcset="([^"]+)"/gi)) {
+            for (const entry of set[1].split(',')) {
+              const match = entry.trim().match(/^(\S+) (\d+)w$/);
+              if (match) await checkWidth(match[1], Number(match[2]));
+            }
+          }
           for (const pattern of [
             '<meta property="og:image"',
             'hreflang="ar"',
@@ -103,6 +121,7 @@ for (const collection of collections) {
     }
     if (!(photo.width > 0 && photo.height > 0))
       errors.push('Invalid image dimensions: ' + photo.id);
+    for (const variant of photo.srcSet) await checkWidth(variant.src, variant.width);
   }
 }
 if (photos !== 639) errors.push('Expected 639 gallery photos, got ' + photos);
