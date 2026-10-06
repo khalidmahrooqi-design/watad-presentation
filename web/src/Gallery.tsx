@@ -73,6 +73,8 @@ export function Gallery({ collection, locale }: { collection: Collection; locale
         if (data.id !== collection.id || data.images.length !== collection.count)
           throw new Error('Gallery mismatch');
         cache.set(collection.id, data.images);
+        setLoaded(false);
+        setImageError(false);
         setImages(data.images);
       })
       .catch((e) => {
@@ -85,9 +87,16 @@ export function Gallery({ collection, locale }: { collection: Collection; locale
   useEffect(() => {
     const image = root.current?.querySelector<HTMLImageElement>('.gallery-main');
     setLoaded(Boolean(image?.complete && image.naturalWidth));
-    setImageError(false);
   }, [photo?.id]);
-  const select = (next: number) => setIndex((next + images.length) % images.length);
+  const select = (next: number) => {
+    const normalized = (next + images.length) % images.length;
+    if (normalized === index) return;
+    // Reset before mounting the new image. A post-mount effect can erase a fast load error.
+    setLoaded(false);
+    setImageError(false);
+    setImageAttempt(0);
+    setIndex(normalized);
+  };
   const start = Math.max(0, Math.min(index - 2, images.length - 5));
   const label = ar ? 'معرض الصور' : 'Photo gallery';
   return (
@@ -113,7 +122,7 @@ export function Gallery({ collection, locale }: { collection: Collection; locale
         }
         if (e.key === 'Home' || e.key === 'End') {
           e.preventDefault();
-          setIndex(e.key === 'Home' ? 0 : images.length - 1);
+          select(e.key === 'Home' ? 0 : images.length - 1);
         }
       }}
     >
@@ -203,7 +212,7 @@ export function Gallery({ collection, locale }: { collection: Collection; locale
             key={image.id}
             aria-pressed={index === start + offset}
             aria-label={`${ar ? 'عرض الصورة' : 'Show photo'} ${start + offset + 1}`}
-            onClick={() => setIndex(start + offset)}
+            onClick={() => select(start + offset)}
           >
             <img src={asset(image.thumb)} alt="" width="240" height="150" loading="lazy" />
             <span>{start + offset + 1}</span>

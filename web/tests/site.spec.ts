@@ -63,7 +63,11 @@ test('responsive geometry stays within viewport, including the dock', async ({ p
     for (const width of [320, 390, 768, 1440, 3840]) {
       await page.setViewportSize({ width, height: width === 3840 ? 2160 : 900 });
       await page.goto(`${locale}/`);
+      await expect(page.locator('html')).toHaveAttribute('lang', locale);
       await page.evaluate(() => document.fonts.ready);
+      await expect
+        .poll(() => page.evaluate(() => document.documentElement.scrollWidth))
+        .toBeLessThanOrEqual(width + 1);
       const geometry = await page.evaluate(() => {
         const d = document.querySelector('.presentation-dock')!.getBoundingClientRect();
         return {
@@ -71,7 +75,9 @@ test('responsive geometry stays within viewport, including the dock', async ({ p
           left: d.left,
           right: d.right,
           width: innerWidth,
-          overflowing: [...document.querySelectorAll('main *')]
+          documentWidth: document.documentElement.scrollWidth,
+          bodyWidth: document.body.scrollWidth,
+          overflowing: [...document.querySelectorAll('body *')]
             .map((element) => ({
               element: element.tagName + '.' + element.className,
               section: element.closest('section')?.id,
