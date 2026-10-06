@@ -270,6 +270,7 @@ export default function App({ locale, caseId }: PageProps) {
   const navigationTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const noticeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const currentRef = useRef(current);
+  const [preferencesReady, setPreferencesReady] = useState(false);
   currentRef.current = current;
   const motion = paused || reduced;
   const languageHref = `${BASE}${rtl ? 'en' : 'ar'}/${localCase ? `cases/${localCase.id}/` : ''}`;
@@ -292,6 +293,7 @@ export default function App({ locale, caseId }: PageProps) {
     setPaused(storedMotion);
     const mq = matchMedia('(prefers-reduced-motion: reduce)');
     setReduced(mq.matches);
+    setPreferencesReady(true);
     const change = () => setReduced(mq.matches);
     mq.addEventListener('change', change);
     const full = () => setFullscreen(Boolean(document.fullscreenElement));
@@ -304,21 +306,23 @@ export default function App({ locale, caseId }: PageProps) {
     };
   }, []);
   useEffect(() => {
+    if (!preferencesReady) return;
     document.documentElement.dataset.theme = theme;
     try {
       localStorage.setItem('watad-theme', theme);
     } catch {
       /* Use an in-memory preference. */
     }
-  }, [theme]);
+  }, [theme, preferencesReady]);
   useEffect(() => {
+    if (!preferencesReady) return;
     document.documentElement.dataset.motion = motion ? 'paused' : 'active';
     try {
       localStorage.setItem('watad-motion', paused ? 'paused' : 'active');
     } catch {
       /* Use an in-memory preference. */
     }
-  }, [motion, paused]);
+  }, [motion, paused, preferencesReady]);
   useEffect(() => {
     document.body.classList.toggle('presentation', presentation);
     return () => document.body.classList.remove('presentation');

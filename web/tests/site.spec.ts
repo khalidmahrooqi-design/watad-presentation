@@ -148,14 +148,16 @@ test('no-JavaScript and reduced-motion versions retain content', async ({ browse
   ).toBe('none');
   await reduced.close();
 });
-test('semantic and contrast accessibility checks on both languages/themes', async ({ page }) => {
+test('semantic and contrast accessibility checks on both languages/themes', async ({
+  browser,
+  baseURL,
+}) => {
   for (const locale of ['ar', 'en'])
     for (const theme of ['dark', 'light']) {
+      const context = await browser.newContext({ baseURL });
+      await context.addInitScript((t) => localStorage.setItem('watad-theme', t), theme);
+      const page = await context.newPage();
       await page.goto(`${locale}/`);
-      await page.evaluate((t) => {
-        localStorage.setItem('watad-theme', t);
-      }, theme);
-      await page.reload();
       await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
       await page.evaluate(() => document.fonts.ready);
       const result = await new AxeBuilder({ page })
@@ -170,6 +172,7 @@ test('semantic and contrast accessibility checks on both languages/themes', asyn
           locale,
         })),
       ).toEqual([]);
+      await context.close();
     }
 });
 test('native fullscreen or its visible fallback, with a working exit', async ({ page }) => {

@@ -115,6 +115,10 @@ h3 {
   font-weight: 700;
   line-height: 1.16;
   text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+p {
+  overflow-wrap: anywhere;
 }
 h1 {
   font-size: clamp(3.3rem, 5.1vw, 6.6rem);
