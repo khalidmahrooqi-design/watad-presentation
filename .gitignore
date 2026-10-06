@@ -1,0 +1,19 @@
+# Only the website, workflow and public README belong in the public repository.
+/audit/
+/assets/
+/blender/
+/verification/
+/Codex/
+/.playwright-mcp/
+/moodboard.html
+/Website-*.md
+/node_modules/
+/web/node_modules/
+/web/dist/
+/web/.ssr/
+/web/test-results/
+/web/playwright-report/
+/.DS_Store
+*.log
+.env*
+!.env.example
