@@ -71,9 +71,18 @@ test('responsive geometry stays within viewport, including the dock', async ({ p
           left: d.left,
           right: d.right,
           width: innerWidth,
+          overflowing: [...document.querySelectorAll('main *')]
+            .map((element) => ({
+              element: element.tagName + '.' + element.className,
+              section: element.closest('section')?.id,
+              right: element.getBoundingClientRect().right,
+              width: element.getBoundingClientRect().width,
+            }))
+            .filter((element) => element.right > innerWidth + 1)
+            .slice(0, 12),
         };
       });
-      expect(geometry.overflow, `${locale} ${width}`).toBe(false);
+      expect(geometry.overflow, JSON.stringify({ locale, ...geometry })).toBe(false);
       expect(geometry.left).toBeGreaterThanOrEqual(0);
       expect(geometry.right).toBeLessThanOrEqual(geometry.width + 1);
     }
@@ -141,6 +150,8 @@ test('semantic and contrast accessibility checks on both languages/themes', asyn
         localStorage.setItem('watad-theme', t);
       }, theme);
       await page.reload();
+      await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+      await page.evaluate(() => document.fonts.ready);
       const result = await new AxeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21aa'])
         .analyze();
@@ -149,6 +160,8 @@ test('semantic and contrast accessibility checks on both languages/themes', asyn
           id: v.id,
           impact: v.impact,
           nodes: v.nodes.map((n) => n.target),
+          theme,
+          locale,
         })),
       ).toEqual([]);
     }
