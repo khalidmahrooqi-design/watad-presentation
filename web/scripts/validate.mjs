@@ -61,6 +61,18 @@ async function walk(dir) {
   }
 }
 await walk(root);
+const elementRenders = JSON.parse(await fs.readFile('src/element-renders.json', 'utf8'));
+for (const [id, render] of Object.entries(elementRenders)) {
+  for (const width of render.widths) {
+    const src = `media/element-${id}-w${width}.webp`;
+    await checkWidth(src, width);
+    const meta = await sharp(path.join(root, src)).metadata();
+    if (!meta.hasAlpha) errors.push(`Element transparency missing: ${src}`);
+  }
+  const thumbnail = await sharp(path.join(root, `media/element-${id}-thumb.webp`)).metadata();
+  if (thumbnail.width !== 160 || !thumbnail.hasAlpha)
+    errors.push(`Invalid element thumbnail: ${id}`);
+}
 for (const locale of ['ar', 'en']) {
   const text = await fs.readFile(path.join(root, locale, 'index.html'), 'utf8');
   const count = (text.match(/<section /g) || []).length;

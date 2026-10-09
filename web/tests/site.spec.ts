@@ -227,7 +227,7 @@ test('interactive models remount cleanly and preserve one canvas', async ({
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('en/');
-  for (const id of ['system-layers', 'elements', 'construction-process', 'sustainability']) {
+  for (const id of ['system-layers', 'construction-process', 'sustainability']) {
     const section = page.locator('#' + id);
     await section.scrollIntoViewIfNeeded();
     await section.getByRole('button', { name: 'Explore in 3D' }).click();
@@ -347,33 +347,116 @@ test('gallery recovers failed manifests and photos without leaving the page', as
   await expect(page).toHaveURL(/\/en\/$/);
 });
 
-test('element selection, construction stages and rotation redraw cleanly', async ({
+test('supplied element renders stay mapped, readable and keyboard selectable in both languages', async ({
   page,
-  browserName,
 }) => {
+  const elementTitles = [
+    { id: 'single', ar: 'لوح الجدار المفرد', en: 'Single wall panel' },
+    { id: 'double', ar: 'لوح الجدار المزدوج', en: 'Double wall panel' },
+    { id: 'curved', ar: 'لوح الجدار المنحني', en: 'Curved wall panel' },
+    { id: 'slab', ar: 'لوح الأرضية والسقف', en: 'Floor & slab panel' },
+    { id: 'landing', ar: 'لوح بسطة السلم', en: 'Stair landing panel' },
+    { id: 'stairs', ar: 'عنصر السلالم', en: 'Stair element' },
+  ];
+  for (const locale of ['ar', 'en'] as const)
+    for (const width of [390, 1440]) {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.goto(`${locale}/`);
+      const section = page.locator('#elements');
+      await section.scrollIntoViewIfNeeded();
+      const render = section.locator('.element-render');
+      const image = render.locator('img');
+      const buttons = section.locator('.element-selector button');
+      await expect(buttons).toHaveCount(6);
+      for (const element of elementTitles) {
+        const button = section.locator(`.element-selector button[data-element="${element.id}"]`);
+        await button.click();
+        await expect(render).toHaveAttribute('data-element', element.id);
+        await expect(button).toHaveAttribute('aria-pressed', 'true');
+        await expect(section.locator('.element-selector button[aria-pressed="true"]')).toHaveCount(
+          1,
+        );
+        await expect(image).toHaveAttribute('alt', element[locale]);
+        await expect(render.locator('figcaption')).toContainText(element[locale]);
+        await expect(image).toHaveAttribute(
+          'src',
+          new RegExp(`/media/element-${element.id}-w\\d+\\.webp$`),
+        );
+        await expect(image).toHaveAttribute('srcset', new RegExp(`element-${element.id}-w`));
+        await render.scrollIntoViewIfNeeded();
+        await expect
+          .poll(() =>
+            image.evaluate((node, id) => {
+              const img = node as HTMLImageElement;
+              const src = new URL(img.currentSrc || img.src);
+              return (
+                img.complete &&
+                img.naturalWidth > 0 &&
+                src.origin === location.origin &&
+                new RegExp(`/media/element-${id}-w\\d+\\.webp$`).test(src.pathname)
+              );
+            }, element.id),
+          )
+          .toBe(true);
+        await expect(button.locator('img')).toHaveAttribute('alt', '');
+        await expect(button.locator('img')).toHaveAttribute(
+          'src',
+          new RegExp(`/media/element-${element.id}-thumb\\.webp$`),
+        );
+        const bounds = await render.evaluate((figure) => {
+          const frame = figure.getBoundingClientRect();
+          const img = figure.querySelector('img')!;
+          const image = img.getBoundingClientRect();
+          const caption = figure.querySelector('figcaption')!.getBoundingClientRect();
+          const controls = [...document.querySelectorAll('#elements .element-selector button')];
+          return {
+            imageWidth: image.width,
+            imageHeight: image.height,
+            objectFit: getComputedStyle(img).objectFit,
+            imageInsideFrame:
+              image.left >= frame.left - 1 &&
+              image.right <= frame.right + 1 &&
+              image.top >= frame.top - 1 &&
+              image.bottom <= frame.bottom + 1,
+            captionInsideFrame:
+              caption.left >= frame.left - 1 &&
+              caption.right <= frame.right + 1 &&
+              caption.bottom <= frame.bottom + 1,
+            fitsViewport: [figure, ...controls].every((node) => {
+              const rect = node.getBoundingClientRect();
+              return rect.left >= -1 && rect.right <= innerWidth + 1;
+            }),
+          };
+        });
+        expect(bounds.imageWidth).toBeGreaterThan(100);
+        expect(bounds.imageHeight).toBeGreaterThan(100);
+        expect(bounds.objectFit).toBe('contain');
+        expect(bounds.imageInsideFrame, JSON.stringify({ locale, width, ...bounds })).toBe(true);
+        expect(bounds.captionInsideFrame, JSON.stringify({ locale, width, ...bounds })).toBe(true);
+        expect(bounds.fitsViewport, JSON.stringify({ locale, width, ...bounds })).toBe(true);
+      }
+      await section.locator('.element-selector button[data-element="single"]').focus();
+      await page.keyboard.press('Enter');
+      await expect(render).toHaveAttribute('data-element', 'single');
+      await section.locator('.element-selector button[data-element="double"]').focus();
+      await page.keyboard.press('Space');
+      await expect(render).toHaveAttribute('data-element', 'double');
+      await expect(section.locator('canvas')).toHaveCount(0);
+    }
+});
+
+test('construction stages and model rotation redraw cleanly', async ({ page, browserName }) => {
   test.skip(browserName !== 'chromium', 'Visual GPU checks run on Chromium and actual Edge.');
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('en/');
   await page.getByRole('button', { name: 'Pause motion', exact: true }).click();
-  const elements = page.locator('#elements');
-  await elements.locator('.model-frame').scrollIntoViewIfNeeded();
-  await elements.getByRole('button', { name: 'Explore in 3D', exact: true }).click();
-  await expect(elements.locator('[data-scene-status]')).toHaveAttribute(
-    'data-scene-status',
-    'ready',
-  );
-  let prior = await elements.locator('canvas').screenshot();
-  const buttons = elements.locator('.element-selector button');
-  for (let i = 1; i < (await buttons.count()); i++) {
-    await buttons.nth(i).click();
-    await expect(buttons.nth(i)).toHaveAttribute('aria-pressed', 'true');
-    await elements.locator('canvas').scrollIntoViewIfNeeded();
-    const next = await elements.locator('canvas').screenshot();
-    expect(next.equals(prior), 'Selected element must change').toBe(false);
-    prior = next;
-  }
-  const canvas = elements.locator('canvas');
+  const layers = page.locator('#system-layers');
+  await layers.locator('.model-frame').scrollIntoViewIfNeeded();
+  await layers.getByRole('button', { name: 'Explore in 3D', exact: true }).click();
+  await expect(layers.locator('[data-scene-status]')).toHaveAttribute('data-scene-status', 'ready');
+  const canvas = layers.locator('canvas');
+  const prior = await canvas.screenshot();
   const box = (await canvas.boundingBox())!;
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   await page.mouse.down();
@@ -381,7 +464,7 @@ test('element selection, construction stages and rotation redraw cleanly', async
   await page.mouse.up();
   const rotated = await canvas.screenshot();
   expect(rotated.equals(prior)).toBe(false);
-  await elements.getByRole('button', { name: 'Reset view' }).click();
+  await layers.getByRole('button', { name: 'Reset view' }).click();
   expect((await canvas.screenshot()).equals(rotated)).toBe(false);
   const process = page.locator('#construction-process');
   await process.locator('.model-frame').scrollIntoViewIfNeeded();

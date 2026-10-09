@@ -59,6 +59,18 @@ for (const concept of [
 console.log(
   `Live: ${collections.length} galleries, ${photoCount} photos and six concepts verified.`,
 );
+const elementRenders = JSON.parse(
+  await readFile(new URL('../src/element-renders.json', import.meta.url)),
+);
+for (const [id, render] of Object.entries(elementRenders)) {
+  for (const variant of ['thumb', ...render.widths.map((width) => `w${width}`)]) {
+    const path = `media/element-${id}-${variant}.webp`;
+    const response = await fetch(site + path, { method: 'HEAD' });
+    if (!response.ok || !response.headers.get('content-type')?.includes('image/webp'))
+      throw Error(`Element render unavailable: ${path}`);
+  }
+}
+console.log('Live: all six supplied element renders and their responsive variants verified.');
 const r = await fetch(site + 'release.json?check=' + Date.now());
 const release = await r.json();
 if (expected && release.commit !== expected)

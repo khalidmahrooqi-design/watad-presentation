@@ -28,6 +28,7 @@ The Pages workflow verifies all three browser engines before deployment from `ma
 
 - All 639 supplied photographs are hosted locally in 45 collections; gallery manifests load on demand. Main frames, arrows and five nearby thumbnail previews keep visitors inside the presentation.
 - Six generated architectural concepts are labelled as illustrations.
+- The elements section uses six supplied WATAD cutaway renders, with transparent WebP images and matching preview selectors.
 - The time doughnut and normalized programme bars show the reported 30–40% range. Other figures retain their study periods and source limits.
 - Bilingual sections, case captions and contact links: `web/src/content.ts` and `web/src/App.tsx`.
 - Collection browser and evidence-labelled charts: `web/src/Gallery.tsx`, `web/src/gallery-data.json` and `web/src/Metrics.tsx`.

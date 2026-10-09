@@ -18,9 +18,42 @@ import {
 import { Icon, type IconName } from './icons';
 import { Gallery, GalleryBrowser, galleryForCase } from './Gallery';
 import Metrics from './Metrics';
+import renderData from './element-renders.json';
 import { nextIndex, keyboardDelta, shouldIgnoreShortcut } from './navigation.mjs';
 const Scene = lazy(() => import('./Scene'));
 export type PageProps = { locale: Locale; caseId?: string };
+const elementRenders: Record<string, { width: number; height: number; widths: number[] }> =
+  renderData;
+
+function ElementImage({
+  id,
+  alt,
+  thumbnail = false,
+}: {
+  id: string;
+  alt: string;
+  thumbnail?: boolean;
+}) {
+  const render = elementRenders[id];
+  return (
+    <img
+      src={asset(`media/element-${id}-${thumbnail ? 'thumb' : `w${render.width}`}.webp`)}
+      srcSet={
+        thumbnail
+          ? undefined
+          : render.widths
+              .map((width) => `${asset(`media/element-${id}-w${width}.webp`)} ${width}w`)
+              .join(', ')
+      }
+      sizes={thumbnail ? undefined : '(max-width:1100px) 88vw, 45vw'}
+      width={thumbnail ? 160 : render.width}
+      height={thumbnail ? Math.round((render.height * 160) / render.width) : render.height}
+      alt={alt}
+      loading="lazy"
+      decoding="async"
+    />
+  );
+}
 
 function Photo({
   item,
@@ -785,28 +818,33 @@ export default function App({ locale, caseId }: PageProps) {
         </section>
         <section id="elements" className="section" data-accent="violet">
           <Heading index={4} locale={locale} />
-          <div className="study-layout">
-            <ModelVisual
-              id="elements"
-              model="elements"
-              poster="elements"
-              locale={locale}
-              active={activeScene}
-              onActivate={setActiveScene}
-              onClose={() => setActiveScene(null)}
-              element={element}
-              paused={motion}
-            />
+          <div className="study-layout elements-layout">
+            <figure className="element-render" data-element={element}>
+              <div className="element-render-stage">
+                <ElementImage
+                  key={element}
+                  id={element}
+                  alt={elements.find((el) => el.id === element)!.title[locale]}
+                />
+              </div>
+              <figcaption aria-live="polite" aria-atomic="true">
+                <h3>{elements.find((el) => el.id === element)!.title[locale]}</h3>
+                <p>{locale === 'ar' ? 'تفاصيل العنصر وطبقاته' : 'Element and layer details'}</p>
+              </figcaption>
+            </figure>
             <div className="element-selector" role="group" aria-label={sections[4].title[locale]}>
               {elements.map((el) => (
                 <button
                   key={el.id}
+                  data-element={el.id}
                   aria-pressed={element === el.id}
                   onClick={() => setElement(el.id)}
                 >
-                  <span>{el.title[locale]}</span>
-                  <p>{el.body[locale]}</p>
-                  <Icon name="plus" />
+                  <ElementImage id={el.id} alt="" thumbnail />
+                  <div>
+                    <span>{el.title[locale]}</span>
+                    <p>{el.body[locale]}</p>
+                  </div>
                 </button>
               ))}
             </div>

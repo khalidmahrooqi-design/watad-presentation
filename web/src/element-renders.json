@@ -1,0 +1,32 @@
+{
+  "single": {
+    "width": 1209,
+    "height": 1356,
+    "widths": [360, 720, 1209]
+  },
+  "double": {
+    "width": 1339,
+    "height": 1403,
+    "widths": [360, 720, 1339]
+  },
+  "curved": {
+    "width": 945,
+    "height": 1188,
+    "widths": [360, 720, 945]
+  },
+  "slab": {
+    "width": 1615,
+    "height": 812,
+    "widths": [360, 720, 1615]
+  },
+  "landing": {
+    "width": 1785,
+    "height": 846,
+    "widths": [360, 720, 1785]
+  },
+  "stairs": {
+    "width": 1579,
+    "height": 1290,
+    "widths": [360, 720, 1579]
+  }
+}
