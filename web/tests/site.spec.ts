@@ -316,17 +316,103 @@ test('retry recovers a failed model, global H still works after local focus', as
   await expect(page.locator('.presentation-dock')).toHaveCount(1);
   await expect(page.locator('canvas')).toHaveCount(1);
 });
-test('comparison charts preserve source, units and selectable range', async ({ page }) => {
-  await page.goto('en/');
-  const s = page.locator('#project-comparison');
-  await s.scrollIntoViewIfNeeded();
-  await expect(s.locator('.time-donut')).toHaveAttribute('aria-label', /70 units.*30% saved/);
-  await s.getByRole('button', { name: '40%', exact: true }).click();
-  await expect(s.locator('.time-donut')).toHaveAttribute('aria-label', /60 units.*40% saved/);
-  await expect(s.locator('.metric-source')).toContainText('January 2025');
-  await expect(s.locator('.metric-grid')).toContainText('Including construction-time savings');
-  await expect(s.locator('.small-note')).toContainText('not actual days');
-  await expect(page.locator('.section-concept')).toHaveCount(6);
+test('performance charts retain their arithmetic, assembly qualifiers and separate sources', async ({
+  page,
+}) => {
+  for (const locale of ['ar', 'en']) {
+    const ar = locale === 'ar';
+    await page.goto(`${locale}/`);
+    const section = page.locator('#project-comparison');
+    await section.scrollIntoViewIfNeeded();
+    await expect(section.locator('.time-donut')).toHaveAttribute(
+      'aria-label',
+      ar ? /40 وحدة.*100 وحدة.*60%/ : /40 units.*100 conventional units.*60% saved/,
+    );
+    await expect(section.locator('.programme-chart')).toHaveAttribute(
+      'aria-label',
+      ar ? /100 وحدة.*40 وحدة.*60 وحدة موفرة/ : /100 units.*40 units.*60 units saved/,
+    );
+    await expect(section.locator('.programme-bar:not(.conventional) > span')).toHaveAttribute(
+      'style',
+      /width:\s*40%/,
+    );
+    await expect(section.getByRole('button', { name: /^(30|40)%$/ })).toHaveCount(0);
+    await expect(section.locator('.small-note')).toContainText(
+      ar ? 'ليست أياماً فعلية' : 'not actual days',
+    );
+    const cards = section.locator('.metric-grid article');
+    await expect(cards).toHaveCount(4);
+    const cost = cards.filter({ hasText: ar ? 'توفير في التكلفة' : 'Cost savings' });
+    await expect(cost.locator('strong')).toHaveText('25%');
+    await expect(cost).toContainText(ar ? 'يصل إلى' : 'up to');
+    await expect(cost).toContainText(
+      ar ? 'حسب المواصفات وحجم المشروع' : 'Depending on specifications and project size',
+    );
+    const sound = cards.filter({ hasText: 'PSM90' });
+    await expect(sound.locator('strong')).toHaveText('45dB');
+    await expect(sound).toContainText(ar ? 'اختبار مذكور' : 'test reported');
+    const wall = cards.filter({ hasText: 'PST200' });
+    await expect(wall.locator('strong')).toHaveText('0.169W/m²K');
+    await expect(wall).toContainText(
+      ar ? 'للقواطع والواجهات غير الحاملة' : 'partition / curtain wall',
+    );
+    await expect(wall).toContainText(ar ? 'سماكة نهائية 25 سم' : '25 cm finished thickness');
+    await expect(wall).toContainText(ar ? 'قيمة محسوبة' : 'Calculated value');
+    const floor = cards.filter({ hasText: 'PSSG240' });
+    await expect(floor.locator('strong')).toHaveText('0.159W/m²K');
+    await expect(floor).toContainText(ar ? 'قيمة محسوبة' : 'Calculated value');
+    const source = section.locator('.metric-source');
+    await expect(source).toContainText(
+      ar
+        ? 'الوقت والتكلفة: أرقام المقارنة المقدّمة من الأولى'
+        : 'Time and cost: comparison figures supplied by Al Oula',
+    );
+    await expect(source).toContainText(
+      ar
+        ? 'مواصفات ألواح Emmedue، الإصدار 05، 01/14'
+        : 'Emmedue Panel Specifications, Rev. 05, 01/14',
+    );
+    await expect(source).toContainText(
+      ar ? 'الصفحات المطبوعة 8 و9 و13' : 'printed pages 8, 9 and 13',
+    );
+    await expect(section).not.toContainText(/January 2025|يناير 2025|5\.1%/);
+    const comfort = page.locator('#comfort');
+    await expect(comfort.locator('.comfort-metric').filter({ hasText: 'PSM90' })).toContainText(
+      '45 dB',
+    );
+    await expect(comfort.locator('.comfort-metric').filter({ hasText: 'PST200' })).toContainText(
+      '0.169',
+    );
+    await expect(comfort.locator('.comfort-metric').filter({ hasText: 'PSSG240' })).toContainText(
+      '0.159',
+    );
+    await expect(comfort.locator('.small-note').filter({ hasText: 'PSM140' })).toContainText(
+      '0.240 W/m²K',
+    );
+    for (const width of [390, 1440]) {
+      await page.setViewportSize({ width, height: 1000 });
+      const overflow = await page
+        .locator('.metric-grid article, .comfort-metric')
+        .evaluateAll((items) =>
+          items.flatMap((item) => {
+            const bounds = item.getBoundingClientRect();
+            const range = document.createRange();
+            range.selectNodeContents(item);
+            const content = range.getBoundingClientRect();
+            return bounds.left < -1 ||
+              bounds.right > innerWidth + 1 ||
+              content.left < bounds.left - 1 ||
+              content.right > bounds.right + 1
+              ? [item.textContent]
+              : [];
+          }),
+        );
+      expect(overflow, `${locale}: metric values and qualifiers must fit at ${width}px`).toEqual(
+        [],
+      );
+    }
+    await expect(page.locator('.section-concept')).toHaveCount(6);
+  }
 });
 
 test('gallery recovers failed manifests and photos without leaving the page', async ({ page }) => {

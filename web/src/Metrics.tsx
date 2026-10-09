@@ -1,40 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
-import { bi, type Locale } from './content';
+import { bi, performance, type Locale } from './content';
 const metrics = [
   {
-    value: '2–3',
-    unit: bi('أشهر', 'months'),
-    label: bi('توفير في مدة المشروع', 'Reported programme saving'),
-    context: bi('مقارنة مشروع معسكر عمال', 'Labour-camp project comparison'),
+    value: String(performance.costSaving),
+    unit: '%',
+    label: bi('توفير في التكلفة يصل إلى', 'Cost savings up to'),
+    context: bi('حسب المواصفات وحجم المشروع.', 'Depending on specifications and project size.'),
   },
-  {
-    value: '5.1',
-    unit: bi('%', '%'),
-    label: bi('تكلفة أولية أقل', 'Lower initial cost'),
-    context: bi('مع احتساب أثر توفير وقت الإنشاء', 'Including construction-time savings'),
-  },
-  {
-    value: '20',
-    unit: bi('%', '%'),
-    label: bi('تكلفة أساسات أقل', 'Lower foundation cost'),
-    context: bi('مقارنة الدراسة', 'Study comparison'),
-  },
-  {
-    value: '30.6',
-    unit: bi('%', '%'),
-    label: bi('تكلفة تشغيل أقل', 'Lower operating cost'),
-    context: bi('على مدى 20 عاماً في الدراسة', 'Over 20 years in the study'),
-  },
-  {
-    value: '37.5',
-    unit: bi('%', '%'),
-    label: bi('تكلفة صيانة أقل', 'Lower maintenance cost'),
-    context: bi('على مدى 20 عاماً في الدراسة', 'Over 20 years in the study'),
-  },
+  performance.sound,
+  performance.wall,
+  performance.floor,
 ];
 export default function Metrics({ locale }: { locale: Locale }) {
   const ar = locale === 'ar';
-  const [saving, setSaving] = useState(30);
+  const saving = performance.timeSaving;
   const [visible, setVisible] = useState(false);
   const root = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -58,18 +37,12 @@ export default function Metrics({ locale }: { locale: Locale }) {
     >
       <div className="metrics-lead">
         <div>
-          <p className="overline">
-            {ar ? 'مؤشرات من مقارنة منشورة في العرض' : 'Benchmarks reported in the presentation'}
-          </p>
-          <h3>
-            {ar
-              ? 'وقت أقل. فرصة أكبر لتخطيط مشروعك.'
-              : 'Less time. More room to plan your project.'}
-          </h3>
+          <p className="overline">{ar ? 'الوقت والتكلفة والراحة' : 'Time, cost and comfort'}</p>
+          <h3>{ar ? 'مدة إنشاء أقل بـ60%.' : '60% less construction time.'}</h3>
           <p>
             {ar
-              ? 'يعرض المصدر انخفاضاً في مدة الإنشاء بنسبة 30–40%. اختر أحد طرفَي النطاق لترى الفرق على أساس موحّد.'
-              : 'The source reports 30–40% shorter construction time. Select either end of the range to see the difference on the same basis.'}
+              ? 'من 100 وحدة زمنية في البناء التقليدي إلى 40 وحدة مع وتد. ناقش البرنامج ونطاق العمل مع فريقنا لتقدير مدة مشروعك.'
+              : 'From 100 reference time units for conventional construction to 40 with WATAD. Discuss the programme and scope with our team to estimate your project duration.'}
           </p>
         </div>
         <div
@@ -97,23 +70,6 @@ export default function Metrics({ locale }: { locale: Locale }) {
             <span>{ar ? 'مدة أقل' : 'less time'}</span>
           </div>
         </div>
-      </div>
-      <div
-        className="metric-range"
-        role="group"
-        aria-label={ar ? 'طرفا نطاق توفير الوقت' : 'Time-saving range endpoints'}
-      >
-        <span>{ar ? 'نطاق المصدر' : 'Source range'}</span>
-        {[30, 40].map((n) => (
-          <button
-            className="pill small"
-            key={n}
-            aria-pressed={saving === n}
-            onClick={() => setSaving(n)}
-          >
-            {n}%
-          </button>
-        ))}
       </div>
       <div
         className="programme-chart"
@@ -150,19 +106,20 @@ export default function Metrics({ locale }: { locale: Locale }) {
       <div className="metric-grid">
         {metrics.map((m) => (
           <article key={m.label.en}>
+            <h4>{m.label[locale]}</h4>
             <strong dir="ltr">
               {m.value}
-              <small>{m.unit[locale]}</small>
+              <small>{m.unit}</small>
             </strong>
-            <h4>{m.label[locale]}</h4>
             <p>{m.context[locale]}</p>
           </article>
         ))}
       </div>
       <p className="metric-source">
         {ar
-          ? 'المصدر: عرض «نظام وتد من الأولى»، 8 أبريل 2026، الذي يحيل إلى مقارنة مشروع معسكر عمال، يناير 2025. الدراسة الأصلية غير مرفقة. هذه أرقام مقارنة لنطاق محدد؛ تُراجع نتائج مشروعك حسب التصميم والكميات والفرق والبرنامج.'
-          : 'Source: “WATAD System by Al Oula”, 8 April 2026, citing a labour-camp project comparison from January 2025. The underlying study was not supplied. These are scope-specific comparison figures; your project outcomes depend on design, quantities, crews and programme.'}
+          ? 'الوقت والتكلفة: أرقام المقارنة المقدّمة من الأولى. يُحدّد برنامج المشروع ونطاقه مدة التنفيذ؛ ويعتمد التوفير في التكلفة على المواصفات وحجم المشروع.'
+          : 'Time and cost: comparison figures supplied by Al Oula. The project programme and scope determine its duration; cost savings depend on specifications and project size.'}{' '}
+        {performance.insulationSource[locale]}
       </p>
     </div>
   );

@@ -2597,20 +2597,6 @@ main {
   color: var(--muted);
   font-size: 0.85rem;
 }
-.metric-range {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 24px 0;
-}
-.metric-range > span {
-  color: var(--muted);
-  font-size: 0.8rem;
-}
-.metric-range [aria-pressed='true'] {
-  border-color: var(--mint);
-  color: var(--mint);
-}
 .programme-chart {
   display: grid;
   gap: 18px;
@@ -2671,7 +2657,7 @@ main {
 }
 .metric-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
   margin: 30px 0;
 }
@@ -2694,10 +2680,24 @@ main {
 .metric-grid strong small {
   font-size: 0.8rem;
 }
+.comfort-metric strong {
+  display: block;
+  color: var(--azure);
+  font-size: clamp(1.4rem, 2vw, 2rem);
+  margin: 8px 0;
+  text-align: start;
+}
+.comfort-metric strong small {
+  font-size: 0.8rem;
+}
+.comfort-metric h4 {
+  margin: 24px 0 8px;
+  font-size: 0.9rem;
+}
 .metric-grid h4 {
   font-size: 0.8rem;
   line-height: 1.5;
-  margin: 12px 0 5px;
+  margin: 0 0 8px;
 }
 .metric-grid p {
   color: var(--muted);
@@ -2710,11 +2710,6 @@ main {
   font-size: 0.73rem;
   line-height: 1.8;
   margin: 0;
-}
-@media (max-width: 1000px) {
-  .metric-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
 }
 @media (max-width: 760px) {
   .gallery-selectors {
@@ -2768,9 +2763,6 @@ main {
   .programme-chart > div {
     grid-template-columns: 1fr;
     gap: 8px;
-  }
-  .metric-range {
-    flex-wrap: wrap;
   }
 }
 @media (max-width: 400px) {

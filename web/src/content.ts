@@ -4,6 +4,41 @@ export const ORIGIN = 'https://khalidmahrooqi-design.github.io';
 export const SITE = ORIGIN + BASE;
 export const asset = (path: string) => BASE + path;
 export const bi = (ar: string, en: string) => ({ ar, en });
+export const performance = {
+  timeSaving: 60,
+  costSaving: 25,
+  sound: {
+    value: '45',
+    unit: 'dB',
+    label: bi('مؤشر العزل الصوتي', 'Sound insulation index'),
+    context: bi(
+      'لوح الجدار المفرد PSM90؛ اختبار مذكور في المواصفات بجامعة سانتياغو في تشيلي.',
+      'PSM90 single wall panel; test reported in the specifications at the University of Santiago, Chile.',
+    ),
+  },
+  wall: {
+    value: '0.169',
+    unit: 'W/m²K',
+    label: bi('انتقال حراري للجدران يصل إلى', 'Wall U-value as low as'),
+    context: bi(
+      'PST200 للقواطع والواجهات غير الحاملة؛ سماكة نهائية 25 سم، وقلب EPS بسماكة 20 سم وكثافة 25 كغ/م³. قيمة محسوبة.',
+      'PST200 partition / curtain wall; 25 cm finished thickness, 20 cm EPS at 25 kg/m³. Calculated value.',
+    ),
+  },
+  floor: {
+    value: '0.159',
+    unit: 'W/m²K',
+    label: bi('انتقال حراري للأرضيات يصل إلى', 'Floor U-value as low as'),
+    context: bi(
+      'PSSG240؛ ارتفاع بلوك EPS بمقدار 24 سم وكثافة 15 كغ/م³، مع طبقة EPS سفلية 4 سم وخرسانة 4 سم ولياسة 2 سم. قيمة محسوبة.',
+      'PSSG240; 24 cm EPS pot height at 15 kg/m³, with a 4 cm EPS base plate, 4 cm concrete and 2 cm plaster. Calculated value.',
+    ),
+  },
+  insulationSource: bi(
+    'المصدر: مواصفات ألواح Emmedue، الإصدار 05، 01/14، الصفحات المطبوعة 8 و9 و13. القيم تخص التركيبات المذكورة؛ انخفاض معامل U يعني انتقالاً أقل للحرارة. تختلف نتيجة المبنى باختلاف الوصلات والفتحات والتنفيذ.',
+    'Source: Emmedue Panel Specifications, Rev. 05, 01/14, printed pages 8, 9 and 13. Values apply to the stated assemblies; a lower U-value means less heat transfer. Whole-building results depend on joints, openings and installation.',
+  ),
+};
 export const sections = [
   {
     id: 'hero',

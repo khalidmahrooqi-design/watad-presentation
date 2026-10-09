@@ -12,6 +12,7 @@ import {
   stageBodies,
   cases,
   faqs,
+  performance,
   type Locale,
   type CaseRecord,
 } from './content';
@@ -886,11 +887,22 @@ export default function App({ locale, caseId }: PageProps) {
           <div className="comfort-grid">
             <article>
               <Icon name="heat" />
-              <h3>{locale === 'ar' ? 'صمّم للحرارة' : 'Design for heat'}</h3>
-              <p>
+              <h3>
+                {locale === 'ar' ? 'عزل حراري يناسب تصميمك' : 'Thermal insulation for your design'}
+              </h3>
+              {[performance.wall, performance.floor].map((metric) => (
+                <div className="comfort-metric" key={metric.value}>
+                  <h4>{metric.label[locale]}</h4>
+                  <strong dir="ltr">
+                    U = {metric.value} <small>{metric.unit}</small>
+                  </strong>
+                  <p>{metric.context[locale]}</p>
+                </div>
+              ))}
+              <p className="small-note">
                 {locale === 'ar'
-                  ? 'القلب العازل جزء من استراتيجية الغلاف الحراري. راجع التركيب والسماكات والتفاصيل مع حسابات المبنى.'
-                  : 'The insulating core contributes to the thermal envelope strategy. Review the assembly, thicknesses and details alongside building calculations.'}
+                  ? 'للجدار المفرد PSM140: معامل U محسوب قدره 0.240 W/m²K، بسماكة نهائية 21 سم وكثافة EPS قدرها 25 كغ/م³.'
+                  : 'For the PSM140 single wall: calculated U = 0.240 W/m²K, with 21 cm finished thickness and EPS density of 25 kg/m³.'}
               </p>
               <div className="heat-diagram" aria-hidden="true">
                 <span />
@@ -901,7 +913,14 @@ export default function App({ locale, caseId }: PageProps) {
             </article>
             <article>
               <Icon name="volume" />
-              <h3>{locale === 'ar' ? 'راجع تفاصيل الصوت' : 'Review acoustic details'}</h3>
+              <h3>{locale === 'ar' ? 'راحة تسمع الفرق فيها' : 'Comfort you can hear'}</h3>
+              <div className="comfort-metric">
+                <h4>{performance.sound.label[locale]}</h4>
+                <strong dir="ltr">
+                  {performance.sound.value} <small>{performance.sound.unit}</small>
+                </strong>
+                <p>{performance.sound.context[locale]}</p>
+              </div>
               <p>
                 {locale === 'ar'
                   ? 'الأداء الصوتي مرتبط بتركيب الجدار والوصلات والفتحات. اطلب تقريراً يطابق التركيب المستخدم في مشروعك.'
@@ -925,6 +944,7 @@ export default function App({ locale, caseId }: PageProps) {
               </p>
             </article>
           </div>
+          <p className="metric-source">{performance.insulationSource[locale]}</p>
         </section>
         <section id="design-flexibility" className="section design" data-accent="violet">
           <div className="design-copy">
