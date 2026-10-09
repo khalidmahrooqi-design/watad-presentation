@@ -605,12 +605,7 @@ export default function App({ locale, caseId }: PageProps) {
           <a className="contact-email" href="mailto:info@aloulaidc.om" dir="ltr">
             info@aloulaidc.om
           </a>
-          <a
-            className="text-link"
-            href="https://www.aloulaidc.om/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a className="text-link" href={`${BASE}${locale}/#hero`}>
             <Icon name="link" />
             {ui.website[locale]}
           </a>

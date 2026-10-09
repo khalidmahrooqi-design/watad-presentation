@@ -75,7 +75,7 @@ await fs.writeFile(
   Buffer.concat([header, ...sizes.map((s) => pngs[s])]),
 );
 // The monochrome pinned-tab utility remains separate from the approved colour artwork.
-const site = 'https://khalidmahrooqi-design.github.io/watad-presentation/';
+const site = 'https://www.aloulaidc.om/';
 const qr = QRCode.create(site, { errorCorrectionLevel: 'H' });
 const n = qr.modules.size;
 const pitch = 8;
@@ -109,9 +109,9 @@ await fs.writeFile(
     {
       name: 'وتد | الشركة الأولى للاستثمار والتطوير',
       short_name: 'WATAD',
-      id: '/watad-presentation/',
-      start_url: '/watad-presentation/',
-      scope: '/watad-presentation/',
+      id: '/',
+      start_url: '/',
+      scope: '/',
       display: 'standalone',
       background_color: '#17212b',
       theme_color: '#17212b',

@@ -20,7 +20,6 @@ for (const size of [174, 180, 220, 256, 300, 512, 1024]) {
     ),
   );
   const result = new QRCodeReader().decode(bitmap);
-  if (result.getText() !== 'https://khalidmahrooqi-design.github.io/watad-presentation/')
-    throw Error('QR target mismatch');
+  if (result.getText() !== 'https://www.aloulaidc.om/') throw Error('QR target mismatch');
   console.log(`Branded SVG QR decoded correctly at ${size}px.`);
 }

@@ -6,8 +6,8 @@ export type PerformanceMetric = {
   context: Record<Locale, string>;
   comparison?: Record<Locale, string>;
 };
-export const BASE = '/watad-presentation/';
-export const ORIGIN = 'https://khalidmahrooqi-design.github.io';
+export const BASE = '/';
+export const ORIGIN = 'https://www.aloulaidc.om';
 export const SITE = ORIGIN + BASE;
 export const asset = (path: string) => BASE + path;
 export const bi = (ar: string, en: string) => ({ ar, en });
@@ -235,7 +235,7 @@ export const ui = {
   local: bi('تطبيقات في عُمان', 'Applications in Oman'),
   back: bi('العودة إلى العرض', 'Back to presentation'),
   mail: bi('اكتب إلى الفريق', 'Email the team'),
-  website: bi(`موقع ${companyName.ar}`, 'Al Oula official website'),
+  website: bi('العودة إلى البداية', 'Back to start'),
   qr: bi('امسح لفتح العرض', 'Scan to open the presentation'),
   copied: bi('تم نسخ الرابط', 'Link copied'),
   copy: bi('نسخ رابط العرض', 'Copy presentation link'),

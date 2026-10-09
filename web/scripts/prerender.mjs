@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { render, cases, sections, companyName, BASE, SITE, ORIGIN } from '../.ssr/render.js';
+import { legacyRoutes, prefixAliases } from './legacy-routes.mjs';
 const out = path.resolve('dist');
 const manifest = JSON.parse(await fs.readFile(path.join(out, '.vite/manifest.json'), 'utf8'));
 const entry = manifest['index.html'];
@@ -82,6 +83,29 @@ ${(entry.css || []).map((file) => `<link rel="stylesheet" href="${BASE}${file}"/
   await fs.mkdir(dir, { recursive: true });
   await fs.writeFile(path.join(dir, 'index.html'), html);
 }
+const canonicalPaths = new Set(routes.map((record) => BASE + record.route));
+const redirects = { ...legacyRoutes, ...prefixAliases };
+for (const [source, target] of Object.entries(redirects)) {
+  const destination = new URL(target, ORIGIN);
+  if (
+    !/^\/(?:[a-z0-9-]+\/)*[a-z0-9-]+$/.test(source) ||
+    canonicalPaths.has(source + '/') ||
+    destination.origin !== ORIGIN ||
+    !canonicalPaths.has(destination.pathname)
+  )
+    throw Error(`Invalid legacy redirect: ${source} -> ${target}`);
+  const preserveHash = Object.hasOwn(prefixAliases, source);
+  const redirectScript = preserveHash
+    ? `<script>const target=new URL(${JSON.stringify(destination.href)});if(location.hash)target.hash=location.hash;location.replace(target.href);</script>`
+    : '';
+  const href = esc(destination.href);
+  const refresh = `<meta http-equiv="refresh" content="0;url=${href}"/>`;
+  const fallback = preserveHash ? `<noscript>${refresh}</noscript>` : refresh;
+  const html = `<!doctype html><html lang="en" data-watad-redirect><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>WATAD | Continue to the catalogue</title><meta name="robots" content="noindex,follow"/><link rel="canonical" href="${href}"/>${redirectScript}${fallback}</head><body style="margin:0;padding:15vh 8vw;background:#17212b;color:#f2f5f5;font:22px/1.6 Arial,sans-serif"><h1>This page has moved</h1><p>Continue to the WATAD catalogue.</p><p lang="ar" dir="rtl">انتقل إلى كتالوج نظام وتد.</p><a data-watad-redirect-target style="color:#59edc7" href="${href}">Open WATAD / افتح كتالوج وتد</a></body></html>`;
+  const dir = path.join(out, source.slice(1));
+  await fs.mkdir(dir, { recursive: true });
+  await fs.writeFile(path.join(dir, 'index.html'), html);
+}
 const sitemap = routes
   .filter((r) => r.route)
   .map(
@@ -107,4 +131,6 @@ await fs.writeFile(
   }),
 );
 await fs.rm(path.join(out, '.vite'), { recursive: true, force: true });
-console.log(`Prerendered ${routes.length} Arabic/English documents, sitemap and 404.`);
+console.log(
+  `Prerendered ${routes.length} Arabic/English documents, ${Object.keys(redirects).length} legacy redirects, sitemap and 404.`,
+);

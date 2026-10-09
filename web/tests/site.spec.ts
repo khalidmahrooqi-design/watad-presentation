@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { legacyRoutes } from '../scripts/legacy-routes.mjs';
+const publicOrigin = 'https://www.aloulaidc.om';
 test('Arabic and English static content, metadata and contact actions', async ({
   page,
   request,
@@ -14,12 +16,62 @@ test('Arabic and English static content, metadata and contact actions', async ({
     await expect(page.locator('html')).toHaveAttribute('dir', locale === 'ar' ? 'rtl' : 'ltr');
     await expect(page.locator('section')).toHaveCount(15);
     await expect(page.locator('h1')).toHaveCount(1);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      `${publicOrigin}/${locale}/`,
+    );
+    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
+      'content',
+      `${publicOrigin}/${locale}/`,
+    );
+    const image = await page.locator('meta[property="og:image"]').getAttribute('content');
+    expect(image).toMatch(/^https:\/\/www\.aloulaidc\.om\/brand\/og-(ar|en)\.webp$/);
+    const imageResponse = await request.get(new URL(image!).pathname);
+    expect(imageResponse.ok()).toBe(true);
+    expect(imageResponse.headers()['content-type']).toContain('image/webp');
     await expect(page.locator('#contact-card a[href^="mailto:"]').first()).toBeAttached();
     await expect(page.locator('#contact-card .qr-block')).toHaveAttribute(
       'href',
-      'https://khalidmahrooqi-design.github.io/watad-presentation/',
+      publicOrigin + '/',
     );
   }
+});
+test('domain-root manifest and legacy links resolve to the intended page and section', async ({
+  page,
+  request,
+  baseURL,
+}) => {
+  const manifestResponse = await request.get('/site.webmanifest');
+  expect(manifestResponse.ok()).toBe(true);
+  const manifest = await manifestResponse.json();
+  expect(manifest).toMatchObject({ id: '/', start_url: '/', scope: '/' });
+  await page.goto('/');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    'href',
+    publicOrigin + '/ar/',
+  );
+  // Serve the new origin from the preview so absolute legacy redirects are tested before DNS cutover.
+  await page.route(publicOrigin + '/**', async (route) => {
+    const url = new URL(route.request().url());
+    const response = await request.get(new URL(url.pathname + url.search, baseURL!).href);
+    await route.fulfill({ response });
+  });
+  const legacy = Object.entries(legacyRoutes).find(([, destination]) => destination.includes('#'));
+  expect(
+    legacy,
+    'At least one previous company route must preserve its section destination',
+  ).toBeDefined();
+  const [legacyPath, destination] = legacy!;
+  const redirectResponse = await request.get(legacyPath + '/');
+  expect(redirectResponse.ok()).toBe(true);
+  expect(await redirectResponse.text()).toContain('data-watad-redirect');
+  await page.goto(legacyPath + '/');
+  await expect(page).toHaveURL(publicOrigin + destination);
+  await expect(page.locator(new URL(destination, publicOrigin).hash)).toBeInViewport();
+  await page.goto(new URL('/watad-presentation/en/#elements', baseURL!).href);
+  await expect(page).toHaveURL(publicOrigin + '/en/#elements');
+  await expect(page.locator('#elements')).toBeInViewport();
 });
 test('theme, motion, dock, presentation and keyboard states persist correctly', async ({
   page,
@@ -175,19 +227,20 @@ test('all case collections stay on the page with arrows and nearby previews', as
   await range.press('ArrowRight');
   expect(await range.inputValue()).not.toBe(initial);
 });
-test('no-JavaScript and reduced-motion versions retain content', async ({ browser }) => {
+test('no-JavaScript and reduced-motion versions retain content', async ({ browser, baseURL }) => {
   const ctx = await browser.newContext({
+    baseURL,
     javaScriptEnabled: false,
     viewport: { width: 390, height: 844 },
   });
   const p = await ctx.newPage();
-  await p.goto('http://127.0.0.1:4173/watad-presentation/ar/');
+  await p.goto('ar/');
   await expect(p.locator('section')).toHaveCount(15);
   await expect(p.locator('#contact-card .qr-block')).toBeAttached();
   await ctx.close();
-  const reduced = await browser.newContext({ reducedMotion: 'reduce' });
+  const reduced = await browser.newContext({ baseURL, reducedMotion: 'reduce' });
   const page = await reduced.newPage();
-  await page.goto('http://127.0.0.1:4173/watad-presentation/en/');
+  await page.goto('en/');
   await expect(page.locator('html')).toHaveAttribute('data-motion', 'paused');
   expect(
     await page

@@ -1,13 +1,72 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
+import { legacyRoutes, prefixAliases } from './legacy-routes.mjs';
 const root = path.resolve('dist');
+const origin = 'https://www.aloulaidc.om';
+const redirects = { ...legacyRoutes, ...prefixAliases };
+const checkedRedirects = new Set();
 let errors = [];
 let bytes = 0;
 let count = 0;
 const checkedWidths = new Map();
+const attr = (tag, name) => tag?.match(new RegExp(`\\b${name}\\s*=\\s*(["'])(.*?)\\1`, 'i'))?.[2];
+const tagWith = (html, tag, attribute, value) =>
+  [...html.matchAll(new RegExp(`<${tag}\\b[^>]*>`, 'gi'))]
+    .map(([match]) => match)
+    .find((match) => attr(match, attribute)?.toLowerCase() === value.toLowerCase());
+function localFile(src, documentPath = '/') {
+  const url = new URL(src, origin + documentPath);
+  if (url.origin !== origin) throw new Error(`Expected a local URL: ${src}`);
+  const file = path.resolve(root, decodeURIComponent(url.pathname).replace(/^\/+/, ''));
+  if (file !== root && !file.startsWith(root + path.sep))
+    throw new Error(`Public path escapes dist: ${src}`);
+  return { file, url };
+}
+async function checkLocalLink(src, rel) {
+  const documentPath =
+    '/' +
+    rel
+      .replace(/index\.html$/, '')
+      .split(path.sep)
+      .join('/');
+  try {
+    const { file, url } = localFile(src, documentPath);
+    const stat = await fs.stat(file);
+    const destination = stat.isDirectory() ? path.join(file, 'index.html') : file;
+    await fs.access(destination);
+    if (url.hash && destination.endsWith('.html')) {
+      const text = await fs.readFile(destination, 'utf8');
+      const id = decodeURIComponent(url.hash.slice(1));
+      if (![...text.matchAll(/\bid=["']([^"']+)["']/g)].some((match) => match[1] === id))
+        errors.push(`Missing destination #${id}: ${src} in ${rel}`);
+    }
+  } catch (error) {
+    errors.push(`Invalid local link ${src} in ${rel}: ${error.message}`);
+  }
+}
+async function checkRedirect(html, rel) {
+  const route = '/' + path.dirname(rel).split(path.sep).join('/');
+  const target = redirects[route];
+  if (!target) {
+    errors.push(`Unmapped redirect document: ${rel}`);
+    return;
+  }
+  checkedRedirects.add(route);
+  const expected = origin + target;
+  const canonical = attr(tagWith(html, 'link', 'rel', 'canonical'), 'href');
+  const refresh = attr(tagWith(html, 'meta', 'http-equiv', 'refresh'), 'content');
+  const fallback = html.match(/<a\b[^>]*\bdata-watad-redirect-target\b[^>]*>[\s\S]*?<\/a>/i)?.[0];
+  if (canonical !== expected) errors.push(`Incorrect redirect canonical in ${rel}`);
+  if (refresh !== `0;url=${expected}`) errors.push(`Incorrect redirect refresh in ${rel}`);
+  if (attr(fallback, 'href') !== expected || !fallback?.replace(/<[^>]+>/g, '').trim())
+    errors.push(`Missing usable redirect fallback in ${rel}`);
+  if (!target.startsWith('/') || target.startsWith('//'))
+    errors.push(`Redirect target must be a local path in ${rel}`);
+  await checkLocalLink(target, rel);
+}
 async function checkWidth(src, width) {
-  const file = path.join(root, src.replace(/^\/watad-presentation\//, ''));
+  const { file } = localFile(src);
   let actual = checkedWidths.get(file);
   if (!actual) {
     actual = (await sharp(file).metadata()).width;
@@ -32,6 +91,10 @@ async function walk(dir) {
         if (/\/(?:Users|home)\/[\w.-]+\//.test(text) || /OneDrive-[\w-]+\//.test(text))
           errors.push(`Private path in ${rel}`);
         if (rel.endsWith('index.html')) {
+          if (/<html\b[^>]*\bdata-watad-redirect(?:\s|=|>)/i.test(text)) {
+            await checkRedirect(text, rel);
+            continue;
+          }
           for (const set of text.matchAll(/srcset="([^"]+)"/gi)) {
             for (const entry of set[1].split(',')) {
               const match = entry.trim().match(/^(\S+) (\d+)w$/);
@@ -47,13 +110,18 @@ async function walk(dir) {
           ])
             if (!text.includes(pattern)) errors.push(`Missing ${pattern} in ${rel}`);
           if (text.match(/<h1[ >]/g)?.length !== 1) errors.push(`Expected one H1 in ${rel}`);
-          for (const src of text.matchAll(/(?:src|href)="(\/watad-presentation\/[^"#?]+)"/g)) {
-            const target = path.join(root, src[1].slice('/watad-presentation/'.length));
-            try {
-              await fs.access(target);
-            } catch {
-              errors.push(`Missing link ${src[1]} in ${rel}`);
-            }
+          const canonical = attr(tagWith(text, 'link', 'rel', 'canonical'), 'href');
+          const expectedPath =
+            rel === 'index.html' ? '/ar/' : '/' + rel.replace(/index\.html$/, '');
+          if (canonical !== origin + expectedPath) errors.push(`Incorrect canonical in ${rel}`);
+          if (attr(tagWith(text, 'meta', 'property', 'og:url'), 'content') !== canonical)
+            errors.push(`OG URL does not match canonical in ${rel}`);
+          const image = attr(tagWith(text, 'meta', 'property', 'og:image'), 'content');
+          if (!image?.startsWith(origin + '/'))
+            errors.push(`OG image must use ${origin} in ${rel}`);
+          else await checkLocalLink(image, rel);
+          for (const [, src] of text.matchAll(/(?:src|href)="([^"]+)"/g)) {
+            if (src.startsWith('/') || src.startsWith(origin + '/')) await checkLocalLink(src, rel);
           }
         }
       }
@@ -61,6 +129,12 @@ async function walk(dir) {
   }
 }
 await walk(root);
+for (const route of Object.keys(redirects))
+  if (!checkedRedirects.has(route)) errors.push(`Missing checked redirect: ${route}`);
+const webmanifest = JSON.parse(await fs.readFile(path.join(root, 'site.webmanifest'), 'utf8'));
+for (const key of ['id', 'start_url', 'scope'])
+  if (webmanifest[key] !== '/') errors.push(`Manifest ${key} must use the domain root`);
+for (const icon of webmanifest.icons || []) await checkLocalLink(icon.src, 'index.html');
 const elementRenders = JSON.parse(await fs.readFile('src/element-renders.json', 'utf8'));
 for (const [id, render] of Object.entries(elementRenders)) {
   for (const width of render.widths) {
@@ -88,25 +162,6 @@ for (const file of ['panel.glb', 'elements.glb', 'building.glb']) {
     errors.push(`Missing model: ${file}`);
   }
 }
-const scanImages = async (dir) => {
-  for (const e of await fs.readdir(dir, { withFileTypes: true })) {
-    const p = path.join(dir, e.name);
-    if (e.isDirectory()) await scanImages(p);
-    else if (e.name === 'index.html') {
-      const text = await fs.readFile(p, 'utf8');
-      const image = text.match(/property="og:image" content="([^"]+)"/)?.[1];
-      if (image) {
-        const relative = image.split('/watad-presentation/')[1];
-        try {
-          await fs.access(path.join(root, relative));
-        } catch {
-          errors.push(`Missing OG image for ${path.relative(root, p)}`);
-        }
-      }
-    }
-  }
-};
-await scanImages(root);
 // The full 639-photo library is lazy loaded; this is the deployment artifact budget.
 if (bytes > 350 * 1024 * 1024) errors.push('Site exceeds the 350 MB full-library budget');
 const collections = JSON.parse(await fs.readFile('src/gallery-data.json', 'utf8'));

@@ -2,7 +2,7 @@
 
 Arabic-first and English presentation website for the WATAD building system. React, TypeScript and Vite generate complete static language and case pages. Three.js loads illustrative Blender models on request.
 
-Website: https://khalidmahrooqi-design.github.io/watad-presentation/
+Website: https://www.aloulaidc.om/
 
 ## Development
 
@@ -48,6 +48,8 @@ Use the bottom dock or the keyboard: `H` hides/restores controls, `P` toggles pr
 
 ## Updating and rollback
 
-Build and review a change on a `codex/` branch, pass verification, then merge to `main`. Preserve language pairs and the repository base path. Generate share cards with `node scripts/share-cards.mjs` while the production preview server is running, rebuild and check the output. For rollback, revert the release commit and let the same workflow deploy the previous content; do not force-push production history.
+Build and review a change on a `codex/` branch, pass verification, then merge to `main`. Preserve language pairs and the root base path. Generate share cards with `node scripts/share-cards.mjs` while the production preview server is running, rebuild and check the output. For rollback, revert the release commit and let the same workflow deploy the previous content; do not force-push production history.
+
+The production domain is configured in GitHub Pages settings for the Actions deployment. Keep the public origin, Vite base, QR destination, manifest and verification targets aligned when changing domains. Domain migrations also require coordinated DNS and HTTPS configuration; reverting code alone does not revert a domain migration. Legacy website routes lead to relevant catalogue sections. Product purchasing and appointment booking are replaced by contact enquiries.
 
 Original documents, source archives, editable Blender masters, local provenance and private verification records are excluded from this public repository.
