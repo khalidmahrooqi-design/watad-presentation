@@ -13,6 +13,11 @@ import {
   cases,
   faqs,
   performance,
+  blockReference,
+  blockU,
+  thermalComparison,
+  acousticSource,
+  type PerformanceMetric,
   type Locale,
   type CaseRecord,
 } from './content';
@@ -22,6 +27,7 @@ import Metrics from './Metrics';
 import renderData from './element-renders.json';
 import { nextIndex, keyboardDelta, shouldIgnoreShortcut } from './navigation.mjs';
 const Scene = lazy(() => import('./Scene'));
+const thermalMetrics: PerformanceMetric[] = [performance.wall, performance.floor];
 export type PageProps = { locale: Locale; caseId?: string };
 const elementRenders: Record<string, { width: number; height: number; widths: number[] }> =
   renderData;
@@ -145,9 +151,7 @@ function Concept({ id, locale }: { id: string; locale: Locale }) {
         alt={descriptions[id][locale]}
       />
       <figcaption>
-        {locale === 'ar'
-          ? 'تصوّر معماري مولّد — صورة توضيحية'
-          : 'Generated architectural concept — illustrative image'}
+        {locale === 'ar' ? 'تصوّر معماري — صورة توضيحية' : 'Architectural concept — illustration'}
       </figcaption>
     </figure>
   );
@@ -699,11 +703,7 @@ export default function App({ locale, caseId }: PageProps) {
             </div>
             <div className="hero-caption">
               <Icon name="home" />
-              <span>
-                {locale === 'ar'
-                  ? 'من مكتبة التطبيقات في عُمان'
-                  : 'From the Oman application library'}
-              </span>
+              <span>{locale === 'ar' ? 'تطبيقات وتد في عُمان' : 'WATAD applications in Oman'}</span>
             </div>
             <div className="hero-material">
               <Icon name="layers" />
@@ -890,19 +890,23 @@ export default function App({ locale, caseId }: PageProps) {
               <h3>
                 {locale === 'ar' ? 'عزل حراري يناسب تصميمك' : 'Thermal insulation for your design'}
               </h3>
-              {[performance.wall, performance.floor].map((metric) => (
+              {thermalMetrics.map((metric) => (
                 <div className="comfort-metric" key={metric.value}>
                   <h4>{metric.label[locale]}</h4>
                   <strong dir="ltr">
                     U = {metric.value} <small>{metric.unit}</small>
                   </strong>
+                  {metric.comparison && (
+                    <p className="insulation-comparison">{metric.comparison[locale]}</p>
+                  )}
                   <p>{metric.context[locale]}</p>
                 </div>
               ))}
               <p className="small-note">
                 {locale === 'ar'
                   ? 'للجدار المفرد PSM140: معامل U محسوب قدره 0.240 W/m²K، بسماكة نهائية 21 سم وكثافة EPS قدرها 25 كغ/م³.'
-                  : 'For the PSM140 single wall: calculated U = 0.240 W/m²K, with 21 cm finished thickness and EPS density of 25 kg/m³.'}
+                  : 'For the PSM140 single wall: calculated U = 0.240 W/m²K, with 21 cm finished thickness and EPS density of 25 kg/m³.'}{' '}
+                {thermalComparison(0.24)[locale]}
               </p>
               <div className="heat-diagram" aria-hidden="true">
                 <span />
@@ -945,6 +949,45 @@ export default function App({ locale, caseId }: PageProps) {
             </article>
           </div>
           <p className="metric-source">{performance.insulationSource[locale]}</p>
+          <details id="insulation-reference" className="insulation-reference">
+            <summary>
+              {locale === 'ar'
+                ? 'المواصفات ومراجع الأداء'
+                : 'Specifications and performance references'}
+            </summary>
+            <p>
+              {locale === 'ar'
+                ? 'المرجع الدولي للمقارنة: بلوك خرساني مفرغ 200 مم + لياسة أسمنتية 10 مم على كل وجه = 220 مم نهائياً. حُسب أداء الجدار غير المعزول باستخدام خصائص الطبقات المنشورة لدى هيئة الكهرباء والماء في البحرين.'
+                : 'International comparison reference: 200 mm hollow concrete block + 10 mm cement plaster on each face = 220 mm finished. The uninsulated wall performance is calculated from layer properties published by Bahrain’s Electricity and Water Authority.'}
+            </p>
+            <p dir="ltr" className="reference-formula">
+              R = 0.059 + 0.226 + 0.121 + (2 × 0.010 ÷ 0.75) ={' '}
+              {blockReference.resistance.toFixed(4)} m²K/W
+              <br />U = 1 ÷ R ≈ {blockU.toFixed(2)} W/m²K
+            </p>
+            <p>
+              {locale === 'ar'
+                ? 'نسبة الخفض = (1 − معامل U لوتد ÷ معامل U المرجعي) × 100. مقارنة حسابية إرشادية لتركيبات الجدران المذكورة عند تساوي المساحة وفرق الحرارة، وليست اختباراً مقارناً متطابق الشروط. النسبة تخص انتقال الحرارة عبر الجدار فقط؛ ولا تمثل وفراً في فاتورة التكييف أو انخفاضاً في درجة حرارة الغرفة.'
+                : 'Reduction = (1 − WATAD U ÷ reference U) × 100. An indicative calculation for the stated wall assemblies at equal area and temperature difference, rather than a matched laboratory comparison. The percentage applies to wall heat transfer only, not cooling bills or room-temperature reduction.'}
+            </p>
+            <p>
+              {locale === 'ar'
+                ? 'الأداء الصوتي: خفض إجمالي مقاس قدره 45 dB(A) لعينة PSM90 بسماكة نهائية 180 مم. يختلف الأداء المنفذ بحسب تركيب الجدار والوصلات والفتحات.'
+                : 'Acoustic performance: 45 dB(A) measured gross reduction for the 180 mm finished PSM90 specimen. Installed performance depends on the wall assembly, joints and openings.'}
+            </p>
+            <div className="reference-links">
+              <a href={blockReference.source} target="_blank" rel="noreferrer">
+                {locale === 'ar'
+                  ? 'مرجع الخصائص الحرارية — البحرين (PDF)'
+                  : 'Thermal property reference — Bahrain (PDF)'}
+              </a>
+              <a href={acousticSource} target="_blank" rel="noreferrer">
+                {locale === 'ar'
+                  ? 'تقرير اختبار الصوت — Emmedue / IDIEM (PDF)'
+                  : 'Acoustic test report — Emmedue / IDIEM (PDF)'}
+              </a>
+            </div>
+          </details>
         </section>
         <section id="design-flexibility" className="section design" data-accent="violet">
           <div className="design-copy">

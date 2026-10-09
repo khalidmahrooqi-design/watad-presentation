@@ -1,19 +1,40 @@
 export type Locale = 'ar' | 'en';
+export type PerformanceMetric = {
+  value: string;
+  unit: string;
+  label: Record<Locale, string>;
+  context: Record<Locale, string>;
+  comparison?: Record<Locale, string>;
+};
 export const BASE = '/watad-presentation/';
 export const ORIGIN = 'https://khalidmahrooqi-design.github.io';
 export const SITE = ORIGIN + BASE;
 export const asset = (path: string) => BASE + path;
 export const bi = (ar: string, en: string) => ({ ar, en });
+// International reference inputs; this is a derived 220 mm wall, not an Oman product test.
+export const blockReference = {
+  resistance: 0.059 + 0.226 + 0.121 + (2 * 0.01) / 0.75,
+  source:
+    'https://legacy.ewa.bh/en/Business/Documents/Thermal%20Insulation_Wall_Cross%20section%20Upload.pdf',
+};
+export const blockU = 1 / blockReference.resistance;
+export const heatReduction = (u: number) => (100 * (1 - u / blockU)).toFixed(1);
+export const thermalComparison = (u: number) =>
+  bi(
+    `نحو ${heatReduction(u)}% انتقال حراري أقل — مقارنة حسابية مرجعية بجدار بلوك مفرغ بسماكة نهائية 220 مم.`,
+    `About ${heatReduction(u)}% less wall heat transfer — indicative calculation versus a 220 mm finished hollow-block reference.`,
+  );
+export const acousticSource = 'https://www.mdue.it/source/prove-acustiche-3.pdf';
 export const performance = {
   timeSaving: 60,
   costSaving: 25,
   sound: {
     value: '45',
-    unit: 'dB',
-    label: bi('مؤشر العزل الصوتي', 'Sound insulation index'),
+    unit: 'dB(A)',
+    label: bi('خفض الصوت المقاس في الاختبار', 'Reported sound reduction'),
     context: bi(
-      'لوح الجدار المفرد PSM90؛ اختبار مذكور في المواصفات بجامعة سانتياغو في تشيلي.',
-      'PSM90 single wall panel; test reported in the specifications at the University of Santiago, Chile.',
+      'عينة PSM90 بسماكة نهائية 180 مم؛ خفض إجمالي مقاس في مختبر IDIEM بجامعة تشيلي، 1998. النتيجة تخص العينة المختبرة.',
+      'PSM90 specimen, 180 mm finished thickness; gross reduction measured at IDIEM, University of Chile, 1998. The result applies to the tested specimen.',
     ),
   },
   wall: {
@@ -24,6 +45,7 @@ export const performance = {
       'PST200 للقواطع والواجهات غير الحاملة؛ سماكة نهائية 25 سم، وقلب EPS بسماكة 20 سم وكثافة 25 كغ/م³. قيمة محسوبة.',
       'PST200 partition / curtain wall; 25 cm finished thickness, 20 cm EPS at 25 kg/m³. Calculated value.',
     ),
+    comparison: thermalComparison(0.169),
   },
   floor: {
     value: '0.159',
@@ -35,8 +57,8 @@ export const performance = {
     ),
   },
   insulationSource: bi(
-    'المصدر: مواصفات ألواح Emmedue، الإصدار 05، 01/14، الصفحات المطبوعة 8 و9 و13. القيم تخص التركيبات المذكورة؛ انخفاض معامل U يعني انتقالاً أقل للحرارة. تختلف نتيجة المبنى باختلاف الوصلات والفتحات والتنفيذ.',
-    'Source: Emmedue Panel Specifications, Rev. 05, 01/14, printed pages 8, 9 and 13. Values apply to the stated assemblies; a lower U-value means less heat transfer. Whole-building results depend on joints, openings and installation.',
+    'المصدر: مواصفات ألواح Emmedue، الإصدار 05، 01/14، الصفحات المطبوعة 8 و9 و13؛ وتقرير IDIEM الصوتي بتاريخ 21 يناير 1998. القيم تخص التركيبات المذكورة؛ انخفاض معامل U يعني انتقالاً أقل للحرارة. تختلف نتيجة المبنى باختلاف الوصلات والفتحات والتنفيذ.',
+    'Source: Emmedue Panel Specifications, Rev. 05, 01/14, printed pages 8, 9 and 13; and the IDIEM acoustic report dated 21 January 1998. Values apply to the stated assemblies; a lower U-value means less heat transfer. Whole-building results depend on joints, openings and installation.',
   ),
 };
 export const sections = [
@@ -135,8 +157,8 @@ export const sections = [
     title: bi('شاهد التطبيق في عُمان', 'See the system in Oman'),
     short: bi('عُمان', 'Oman'),
     body: bi(
-      'من تجهيز الموقع إلى المساحات المكتملة. صور من مكتبة التطبيقات العُمانية توضح مراحل مختلفة من استخدام النظام.',
-      'From site preparation to completed spaces. Images from the Oman application library show different stages of the system in use.',
+      'من تركيب الألواح إلى المساحات المكتملة. استكشف مراحل استخدام نظام وتد في مشاريع بعُمان.',
+      'From panel installation to completed spaces. Explore WATAD applications at different stages in Oman.',
     ),
   },
   {
@@ -144,8 +166,8 @@ export const sections = [
     title: bi('استخدامات تتجاوز الحدود', 'Applications across borders'),
     short: bi('حول العالم', 'Worldwide'),
     body: bi(
-      'استكشف مراجع دولية من مكتبة النظام: الضيافة والمباني السكنية والتجارية. هذه المراجع تعرض التقنية عالمياً، ولا تعني تنفيذ جميعها بواسطة الأولى.',
-      'Explore international system references in hospitality, residential and commercial buildings. These illustrate the technology worldwide; they do not imply delivery of every project by Al Oula.',
+      'تطبيقات نظام Emmedue حول العالم في الضيافة والمباني السكنية والتجارية. اكتشف تنوّع الاستخدامات والأشكال المعمارية.',
+      'Emmedue system references from around the world, spanning hospitality, residential and commercial buildings. Explore the range of applications and architectural forms.',
     ),
   },
   {
@@ -199,7 +221,7 @@ export const ui = {
   menu: bi('أقسام الموقع', 'Website sections'),
   close: bi('إغلاق', 'Close'),
   section: bi('القسم', 'Section'),
-  illustration: bi('تصوّر توضيحي؛ ليس مخططاً تنفيذياً', 'Illustration; not a construction drawing'),
+  illustration: bi('تصوّر توضيحي للنظام', 'System illustration'),
   rotate: bi('اسحب لتدوير النموذج', 'Drag to rotate the model'),
   load3d: bi('استكشف ثلاثي الأبعاد', 'Explore in 3D'),
   reset: bi('إعادة ضبط العرض', 'Reset view'),
@@ -209,7 +231,7 @@ export const ui = {
   viewCase: bi('شاهد المرجع', 'View reference'),
   all: bi('الكل', 'All'),
   international: bi('مرجع دولي للتقنية', 'International technology reference'),
-  local: bi('من مكتبة التطبيقات العُمانية', 'From the Oman application library'),
+  local: bi('تطبيقات في عُمان', 'Applications in Oman'),
   back: bi('العودة إلى العرض', 'Back to presentation'),
   mail: bi('اكتب إلى الفريق', 'Email the team'),
   website: bi('الموقع الرسمي للأولى', 'Al Oula official website'),
@@ -391,8 +413,8 @@ export const cases = [
     width: 2056,
     height: 1536,
     caption: bi(
-      'صورة مساحة داخلية من مجموعة «فيلا في الأنصب» في مكتبة التطبيقات. لا تحدد الصورة وحدها تفاصيل الجدار أو تاريخ التنفيذ.',
-      'Interior image from the “Villa in Al Ansab” application collection. The image alone does not establish the wall details or construction date.',
+      'مساحة داخلية مكتملة في فيلا بالأنصب، عُمان.',
+      'A completed villa interior in Al Ansab, Oman.',
     ),
     use: bi('سكني', 'Residential'),
   },
@@ -405,8 +427,8 @@ export const cases = [
     width: 4032,
     height: 3024,
     caption: bi(
-      'رفع وتجهيز ألواح في الموقع، من مكتبة التطبيقات العُمانية. تُظهر الصورة مرحلة عمل ولا تمثل تعليمات تنفيذ.',
-      'Lifting and positioning panels on site, from the Oman application library. This shows a work stage and is not an installation instruction.',
+      'رفع الألواح وتجهيزها خلال مرحلة التركيب في عُمان.',
+      'Lifting and positioning panels during installation in Oman.',
     ),
     use: bi('مرحلة موقع', 'Site stage'),
   },
@@ -419,8 +441,8 @@ export const cases = [
     width: 1448,
     height: 1086,
     caption: bi(
-      'مرجع من مجموعة Alian chalet في مكتبة النظام، يوضح إمكانات الأشكال المعمارية. مرجع دولي؛ لم تُنسب أعماله إلى الأولى.',
-      'Reference from the Alian chalet system collection, illustrating architectural forms. An international reference; delivery is not attributed to Al Oula.',
+      'منحنيات معمارية في مشروع Alian Chalet بالسعودية، من المراجع الدولية لنظام Emmedue.',
+      'Architectural curves at Alian Chalet, Saudi Arabia — an international Emmedue system reference.',
     ),
     use: bi('ضيافة', 'Hospitality'),
   },
@@ -433,8 +455,8 @@ export const cases = [
     width: 2048,
     height: 1365,
     caption: bi(
-      'مرجع من مجموعة Meisters Uncorked Restaurant في مكتبة النظام. اعرض تفاصيل الدور الإنشائي مع الفريق عند تقييم تطبيق مماثل.',
-      'Reference from the Meisters Uncorked Restaurant system collection. Discuss the structural role with the team when assessing a similar application.',
+      'مطعم Meisters Uncorked في لاغونا، الفلبين — تطبيق تجاري من مراجع النظام الدولية.',
+      'Meisters Uncorked Restaurant in Laguna, Philippines — an international commercial system reference.',
     ),
     use: bi('تجاري', 'Commercial'),
   },
@@ -447,8 +469,8 @@ export const cases = [
     width: 1200,
     height: 800,
     caption: bi(
-      'صورة من مجموعة Dreams Resort Playa Bonita في مكتبة المراجع الدولية للنظام. لا تعني مشاركة الأولى في تنفيذ المشروع.',
-      'Image from the Dreams Resort Playa Bonita international system collection. This does not imply Al Oula’s involvement in project delivery.',
+      'منتجع Dreams Resort Playa Bonita في بنما، من المراجع الدولية لنظام Emmedue.',
+      'Dreams Resort Playa Bonita, Panama — an international Emmedue system reference.',
     ),
     use: bi('ضيافة', 'Hospitality'),
   },
@@ -461,8 +483,8 @@ export const cases = [
     width: 2592,
     height: 1944,
     caption: bi(
-      'مرجع من مجموعة Al Mohanna Gardens في مكتبة النظام، يُظهر مرحلة تنفيذ في الموقع. مرجع دولي للتقنية، ولا يُنسب تنفيذه إلى الأولى.',
-      'Reference from the Al Mohanna Gardens system collection, showing a site construction stage. An international technology reference; delivery is not attributed to Al Oula.',
+      'مرحلة تنفيذ في مشروع Al Mohanna Gardens بأم صلال، قطر — من مراجع النظام الدولية.',
+      'Construction at Al Mohanna Gardens in Umm Salal, Qatar — an international system reference.',
     ),
     use: bi('مرحلة موقع', 'Site stage'),
   },

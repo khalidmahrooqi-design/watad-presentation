@@ -30,6 +30,7 @@ The Pages workflow verifies all three browser engines before deployment from `ma
 - Six generated architectural concepts are labelled as illustrations.
 - The elements section uses six supplied WATAD cutaway renders, with transparent WebP images and matching preview selectors.
 - The time doughnut and normalized programme bars show Al Oula’s 60% shorter construction-time comparison (100 → 40 reference units), with cost savings up to 25% depending on specifications and project size. Sound and calculated thermal values identify the specific assemblies in Emmedue Panel Specifications, Rev. 05, 01/14.
+- Thermal percentages compare the stated WATAD walls with a derived international 220 mm hollow-block reference using Bahrain EWA layer properties. The expandable source note distinguishes this from the requested 200 mm finished Oman wall and from cooling-energy savings. Acoustic evidence identifies the original 45 dB(A) gross test result; no unsupported percentage or STC/Rw equivalence is claimed.
 - Bilingual sections, case captions and contact links: `web/src/content.ts` and `web/src/App.tsx`.
 - Collection browser and evidence-labelled charts: `web/src/Gallery.tsx`, `web/src/gallery-data.json` and `web/src/Metrics.tsx`.
 - Typography, surfaces and responsive layout: `web/src/style.css`.

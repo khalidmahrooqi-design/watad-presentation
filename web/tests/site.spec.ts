@@ -129,6 +129,14 @@ test('all case collections stay on the page with arrows and nearby previews', as
     .getByRole('combobox', { name: 'Choose photo collection' })
     .selectOption({ label: 'Meisters Uncorked, Laguna · Philippines · 15' });
   await expect(international.locator('.gallery-main')).toHaveClass(/loaded/);
+  await expect(international.locator('.gallery')).toHaveAccessibleName(
+    'Photo gallery: Meisters Uncorked, Laguna',
+  );
+  await expect(international.locator('.gallery-title .overline')).toHaveText('Philippines');
+  await expect(international.locator('.gallery-main')).toHaveAttribute(
+    'alt',
+    'Meisters Uncorked, Laguna · Philippines · Photo 1',
+  );
   const original = await international.locator('.gallery-main').getAttribute('src');
   await international.getByRole('button', { name: 'Next photo', exact: true }).click();
   await expect(international.locator('.gallery-main')).not.toHaveAttribute('src', original!);
@@ -139,9 +147,23 @@ test('all case collections stay on the page with arrows and nearby previews', as
   await expect(international.locator('.gallery-controls')).toContainText('3 / 15');
   await expect(page).toHaveURL(/en\/$/);
   expect(await international.locator('a[href^="http"]').count()).toBe(0);
-  await page.goto('en/cases/philippines-restaurant/');
-  await expect(page.locator('h1')).toContainText('Laguna');
-  await expect(page.locator('.gallery-main')).toHaveClass(/loaded/);
+  for (const locale of ['ar', 'en']) {
+    const ar = locale === 'ar';
+    await page.goto(`${locale}/cases/philippines-restaurant/`);
+    await expect(page.locator('h1')).toContainText(ar ? 'لاغونا' : 'Laguna');
+    await expect(page.locator('.gallery-main')).toHaveClass(/loaded/);
+    await expect(page.locator('.gallery')).toHaveAccessibleName(
+      ar ? 'معرض الصور: مايسترز أنكوركد، لاغونا' : 'Photo gallery: Meisters Uncorked, Laguna',
+    );
+    await expect(page.locator('.gallery-title .overline')).toHaveText(
+      ar ? 'الفلبين' : 'Philippines',
+    );
+    await expect(page.locator('main > .small-note')).toHaveText(
+      ar
+        ? 'مطعم Meisters Uncorked في لاغونا، الفلبين — تطبيق تجاري من مراجع النظام الدولية.'
+        : 'Meisters Uncorked Restaurant in Laguna, Philippines — an international commercial system reference.',
+    );
+  }
   await page.getByRole('link', { name: 'Back to presentation' }).click();
   await expect(page.locator('section')).toHaveCount(15);
   await page.locator('details').first().locator('summary').click();
@@ -338,7 +360,7 @@ test('performance charts retain their arithmetic, assembly qualifiers and separa
     );
     await expect(section.getByRole('button', { name: /^(30|40)%$/ })).toHaveCount(0);
     await expect(section.locator('.small-note')).toContainText(
-      ar ? 'ليست أياماً فعلية' : 'not actual days',
+      ar ? 'البناء التقليدي = 100؛ وتد = 40' : 'conventional = 100; WATAD = 40',
     );
     const cards = section.locator('.metric-grid article');
     await expect(cards).toHaveCount(4);
@@ -349,8 +371,11 @@ test('performance charts retain their arithmetic, assembly qualifiers and separa
       ar ? 'حسب المواصفات وحجم المشروع' : 'Depending on specifications and project size',
     );
     const sound = cards.filter({ hasText: 'PSM90' });
-    await expect(sound.locator('strong')).toHaveText('45dB');
-    await expect(sound).toContainText(ar ? 'اختبار مذكور' : 'test reported');
+    await expect(sound.locator('strong')).toHaveText('45dB(A)');
+    await expect(sound).toContainText(ar ? 'خفض إجمالي مقاس' : 'gross reduction measured');
+    await expect(sound).toContainText(ar ? 'جامعة تشيلي، 1998' : 'University of Chile, 1998');
+    await expect(sound).toContainText(ar ? 'العينة المختبرة' : 'tested specimen');
+    await expect(sound).not.toContainText('%');
     const wall = cards.filter({ hasText: 'PST200' });
     await expect(wall.locator('strong')).toHaveText('0.169W/m²K');
     await expect(wall).toContainText(
@@ -358,14 +383,17 @@ test('performance charts retain their arithmetic, assembly qualifiers and separa
     );
     await expect(wall).toContainText(ar ? 'سماكة نهائية 25 سم' : '25 cm finished thickness');
     await expect(wall).toContainText(ar ? 'قيمة محسوبة' : 'Calculated value');
+    await expect(wall.locator('.insulation-comparison')).toContainText('92.7%');
+    await expect(wall.locator('.insulation-comparison')).toContainText(
+      ar ? 'بسماكة نهائية 220 مم' : '220 mm finished hollow-block reference',
+    );
     const floor = cards.filter({ hasText: 'PSSG240' });
     await expect(floor.locator('strong')).toHaveText('0.159W/m²K');
     await expect(floor).toContainText(ar ? 'قيمة محسوبة' : 'Calculated value');
+    await expect(floor).not.toContainText('%');
     const source = section.locator('.metric-source');
     await expect(source).toContainText(
-      ar
-        ? 'الوقت والتكلفة: أرقام المقارنة المقدّمة من الأولى'
-        : 'Time and cost: comparison figures supplied by Al Oula',
+      ar ? 'مقارنة الوقت والتكلفة من الأولى' : 'Time and cost comparison by Al Oula',
     );
     await expect(source).toContainText(
       ar
@@ -377,22 +405,53 @@ test('performance charts retain their arithmetic, assembly qualifiers and separa
     );
     await expect(section).not.toContainText(/January 2025|يناير 2025|5\.1%/);
     const comfort = page.locator('#comfort');
-    await expect(comfort.locator('.comfort-metric').filter({ hasText: 'PSM90' })).toContainText(
-      '45 dB',
+    const comfortSound = comfort.locator('.comfort-metric').filter({ hasText: 'PSM90' });
+    await expect(comfortSound).toContainText('45 dB(A)');
+    await expect(comfortSound).not.toContainText('%');
+    const comfortWall = comfort.locator('.comfort-metric').filter({ hasText: 'PST200' });
+    await expect(comfortWall).toContainText('0.169');
+    await expect(comfortWall.locator('.insulation-comparison')).toContainText('92.7%');
+    await expect(comfortWall.locator('.insulation-comparison')).toContainText(
+      ar ? 'بسماكة نهائية 220 مم' : '220 mm finished hollow-block reference',
     );
-    await expect(comfort.locator('.comfort-metric').filter({ hasText: 'PST200' })).toContainText(
-      '0.169',
+    const comfortFloor = comfort.locator('.comfort-metric').filter({ hasText: 'PSSG240' });
+    await expect(comfortFloor).toContainText('0.159');
+    await expect(comfortFloor).not.toContainText('%');
+    const singleWall = comfort.locator('.small-note').filter({ hasText: 'PSM140' });
+    await expect(singleWall).toContainText('0.240 W/m²K');
+    await expect(singleWall).toContainText('89.6%');
+    await expect(singleWall).toContainText(
+      ar ? 'بسماكة نهائية 220 مم' : '220 mm finished hollow-block reference',
     );
-    await expect(comfort.locator('.comfort-metric').filter({ hasText: 'PSSG240' })).toContainText(
-      '0.159',
+    const reference = comfort.locator('#insulation-reference');
+    await reference.locator('summary').click();
+    await expect(reference).toHaveAttribute('open', '');
+    await expect(reference).toContainText(ar ? '220 مم نهائياً' : '220 mm finished');
+    await expect(reference.locator('.reference-formula')).toContainText('0.4327 m²K/W');
+    await expect(reference.locator('.reference-formula')).toContainText('2.31 W/m²K');
+    await expect(reference).toContainText(
+      ar
+        ? 'لا تمثل وفراً في فاتورة التكييف أو انخفاضاً في درجة حرارة الغرفة'
+        : 'not cooling bills or room-temperature reduction',
     );
-    await expect(comfort.locator('.small-note').filter({ hasText: 'PSM140' })).toContainText(
-      '0.240 W/m²K',
+    await expect(reference).toContainText(
+      ar ? 'انتقال الحرارة عبر الجدار فقط' : 'wall heat transfer only',
+    );
+    await expect(reference.locator('a')).toHaveCount(2);
+    await expect(reference.locator('a').first()).toHaveAttribute(
+      'href',
+      'https://legacy.ewa.bh/en/Business/Documents/Thermal%20Insulation_Wall_Cross%20section%20Upload.pdf',
+    );
+    await expect(reference.locator('a').last()).toHaveAttribute(
+      'href',
+      'https://www.mdue.it/source/prove-acustiche-3.pdf',
     );
     for (const width of [390, 1440]) {
       await page.setViewportSize({ width, height: 1000 });
       const overflow = await page
-        .locator('.metric-grid article, .comfort-metric')
+        .locator(
+          '.metric-grid article, .comfort-metric, .metric-source, #insulation-reference p, #insulation-reference .reference-links a',
+        )
         .evaluateAll((items) =>
           items.flatMap((item) => {
             const bounds = item.getBoundingClientRect();

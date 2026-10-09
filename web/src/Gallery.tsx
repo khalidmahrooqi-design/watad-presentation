@@ -222,14 +222,6 @@ export function Gallery({ collection, locale }: { collection: Collection; locale
       <div className="gallery-progress" aria-hidden="true">
         <span style={{ width: `${images.length ? ((index + 1) / images.length) * 100 : 0}%` }} />
       </div>
-      <p className="small-note">
-        {ar ? 'صور من مكتبة التطبيقات المرفقة.' : 'Photos from the supplied application library.'}
-        {collection.region === 'international'
-          ? ar
-            ? ' مراجع دولية للنظام؛ لا يُنسب تنفيذها إلى الأولى.'
-            : ' International system references; delivery is not attributed to Al Oula.'
-          : ''}
-      </p>
     </div>
   );
 }

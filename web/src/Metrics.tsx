@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { bi, performance, type Locale } from './content';
-const metrics = [
+import { bi, performance, type Locale, type PerformanceMetric } from './content';
+const metrics: PerformanceMetric[] = [
   {
     value: String(performance.costSaving),
     unit: '%',
@@ -100,8 +100,8 @@ export default function Metrics({ locale }: { locale: Locale }) {
       </div>
       <p className="small-note">
         {ar
-          ? 'الأساس = 100 وحدة زمنية مرجعية؛ ليست أياماً فعلية أو معدل تركيب يومياً.'
-          : 'Baseline = 100 reference time units; these are not actual days or a daily assembly rate.'}
+          ? 'مؤشر المدة: البناء التقليدي = 100؛ وتد = 40.'
+          : 'Programme index: conventional = 100; WATAD = 40.'}
       </p>
       <div className="metric-grid">
         {metrics.map((m) => (
@@ -111,15 +111,19 @@ export default function Metrics({ locale }: { locale: Locale }) {
               {m.value}
               <small>{m.unit}</small>
             </strong>
+            {m.comparison && <p className="insulation-comparison">{m.comparison[locale]}</p>}
             <p>{m.context[locale]}</p>
           </article>
         ))}
       </div>
       <p className="metric-source">
         {ar
-          ? 'الوقت والتكلفة: أرقام المقارنة المقدّمة من الأولى. يُحدّد برنامج المشروع ونطاقه مدة التنفيذ؛ ويعتمد التوفير في التكلفة على المواصفات وحجم المشروع.'
-          : 'Time and cost: comparison figures supplied by Al Oula. The project programme and scope determine its duration; cost savings depend on specifications and project size.'}{' '}
-        {performance.insulationSource[locale]}
+          ? 'مقارنة الوقت والتكلفة من الأولى. تعتمد مدة التنفيذ على برنامج المشروع ونطاقه، والتوفير في التكلفة على المواصفات وحجم المشروع.'
+          : 'Time and cost comparison by Al Oula. Duration depends on the project programme and scope; cost savings depend on specifications and project size.'}{' '}
+        {performance.insulationSource[locale]}{' '}
+        <a href="#insulation-reference">
+          {ar ? 'أساس مقارنة العزل ومراجعها' : 'Insulation comparison basis and sources'}
+        </a>
       </p>
     </div>
   );
