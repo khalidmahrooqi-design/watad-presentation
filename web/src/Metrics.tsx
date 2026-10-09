@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { bi, performance, type Locale, type PerformanceMetric } from './content';
+import { bi, companyName, performance, type Locale, type PerformanceMetric } from './content';
 const metrics: PerformanceMetric[] = [
   {
     value: String(performance.costSaving),
@@ -118,7 +118,7 @@ export default function Metrics({ locale }: { locale: Locale }) {
       </div>
       <p className="metric-source">
         {ar
-          ? 'مقارنة الوقت والتكلفة من الأولى. تعتمد مدة التنفيذ على برنامج المشروع ونطاقه، والتوفير في التكلفة على المواصفات وحجم المشروع.'
+          ? `مقارنة الوقت والتكلفة من ${companyName.ar}. تعتمد مدة التنفيذ على برنامج المشروع ونطاقه، والتوفير في التكلفة على المواصفات وحجم المشروع.`
           : 'Time and cost comparison by Al Oula. Duration depends on the project programme and scope; cost savings depend on specifications and project size.'}{' '}
         {performance.insulationSource[locale]}{' '}
         <a href="#insulation-reference">

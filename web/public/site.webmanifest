@@ -1,5 +1,5 @@
 {
-  "name": "WATAD by Al Oula | وتد",
+  "name": "وتد | الشركة الأولى للاستثمار والتطوير",
   "short_name": "WATAD",
   "id": "/watad-presentation/",
   "start_url": "/watad-presentation/",
@@ -23,7 +23,7 @@
       "purpose": "any"
     },
     {
-      "src": "brand/icon-512.png",
+      "src": "brand/icon-512-maskable.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

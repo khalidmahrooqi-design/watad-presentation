@@ -11,6 +11,10 @@ export const ORIGIN = 'https://khalidmahrooqi-design.github.io';
 export const SITE = ORIGIN + BASE;
 export const asset = (path: string) => BASE + path;
 export const bi = (ar: string, en: string) => ({ ar, en });
+export const companyName = bi(
+  'الشركة الأولى للاستثمار والتطوير',
+  'Al Oula Development & Investment',
+);
 // International reference inputs; this is a derived 220 mm wall, not an Oman product test.
 export const blockReference = {
   resistance: 0.059 + 0.226 + 0.121 + (2 * 0.01) / 0.75,
@@ -64,10 +68,10 @@ export const performance = {
 export const sections = [
   {
     id: 'hero',
-    title: bi('ابنِ لراحة تدوم', 'Build for lasting comfort'),
+    title: bi('بناء لراحة تدوم', 'Build for lasting comfort'),
     short: bi('البداية', 'Welcome'),
     body: bi(
-      'تقنية إيطالية، وتصنيع في عُمان. اكتشف نظام وتد: قلب عازل، وشبك فولاذي، وطبقات خرسانية تتكامل مع تصميم مشروعك.',
+      'تقنية إيطالية معتمدة عالمياً منذ أكثر من ٤٥ سنة، وتُصنّع في عُمان. اكتشف نظام وتد: قلب عازل، وشبك فولاذي، وطبقات خرسانية مسلحة من أجل متانة تدوم لعشرات السنين وعزل حراري يوفر الراحة والمال، بمرونة في التصميم تلبي جميع الأذواق والاستخدامات.',
       'Italian technology. Manufacturing in Oman. Discover WATAD: an insulating core, steel mesh and concrete layers that work with your project design.',
     ),
   },
@@ -82,10 +86,10 @@ export const sections = [
   },
   {
     id: 'partnership',
-    title: bi('خبرة إيطالية. تصنيع في عُمان.', 'Italian expertise. Manufacturing in Oman.'),
+    title: bi('خبرة إيطالية. تُصنّع في عُمان', 'Italian expertise. Manufacturing in Oman.'),
     short: bi('الشراكة', 'Partnership'),
     body: bi(
-      'يقدّم وتد نظام الألواح بتقنية Emmedue الإيطالية، من خلال الأولى للتنمية والاستثمار في عُمان. تواصل مع الفريق لمناقشة التوريد ومتطلبات مشروعك.',
+      `يُقدَّم نظام الألواح «وتد» بتقنية Emmedue الإيطالية عن طريق ${companyName.ar} في عُمان، من خلال مصنعها في مدينة خزائن الاقتصادية. تواصل مع الفريق لمناقشة التوريد ومتطلبات مشروعك.`,
       'WATAD brings the Italian Emmedue panel technology to Oman through Al Oula Development & Investment. Discuss supply and your project requirements with the team.',
     ),
   },
@@ -94,7 +98,7 @@ export const sections = [
     title: bi('قوة النظام تبدأ من طبقاته', 'Performance begins with the layers'),
     short: bi('الطبقات', 'Layers'),
     body: bi(
-      'لوح خفيف أثناء التجهيز. جدار مركّب بعد التنفيذ. استكشف كيف يعمل العزل والشبك والروابط والخرسانة معاً.',
+      'لوح خفيف أثناء التركيب في الموقع. جدار خرساني صلب بعد التنفيذ. اكتشف كيف يعمل العزل والشبك الحديدي والروابط والخرسانة معاً.',
       'A lightweight panel during preparation. A composite wall after installation. Explore how the insulation, mesh, connectors and concrete work together.',
     ),
   },
@@ -118,7 +122,7 @@ export const sections = [
   },
   {
     id: 'comfort',
-    title: bi('الراحة تُبنى داخل الجدار', 'Comfort is built into the wall'),
+    title: bi('الراحة تبدأ من الجدار', 'Comfort is built into the wall'),
     short: bi('الراحة', 'Comfort'),
     body: bi(
       'اختيار الجدار جزء من منظومة الراحة. العزل والتفاصيل والنوافذ والسقف والتكييف تعمل معاً لتشكيل بيئة المبنى.',
@@ -127,7 +131,7 @@ export const sections = [
   },
   {
     id: 'design-flexibility',
-    title: bi('أعطِ فكرتك مساحة للشكل', 'Give your design room to take shape'),
+    title: bi('أعطِ خيالك مساحة للإبداع', 'Give your design room to take shape'),
     short: bi('التصميم', 'Design'),
     body: bi(
       'من الخطوط المستقيمة إلى المنحنيات والقباب. ناقش إمكانات التصميم مبكراً لربط فكرتك بالتفاصيل القابلة للتنفيذ.',
@@ -148,7 +152,7 @@ export const sections = [
     title: bi('قارن مشروعك على أساس واضح', 'Compare your project on clear terms'),
     short: bi('المقارنة', 'Comparison'),
     body: bi(
-      'التكلفة لا تنتهي عند سعر اللوح. قارن نطاق العمل والعمالة والبرنامج والتشطيبات على أساس واحد، ثم قيّم الاختيار مع فريقك.',
+      'مقارنة التكلفة لا تنتهي عند سعر البناء بالمتر المربع، وإنما تشمل تكاليف شراء المكيفات وفاتورة استهلاك الكهرباء وسرعة التنفيذ التي تقلل من مصاريف الإيجار وسرعة البدء في العائد للمشاريع التجارية.',
       'Cost goes beyond the panel price. Compare scope, labour, programme and finishes on the same basis, then assess the choice with your team.',
     ),
   },
@@ -172,7 +176,7 @@ export const sections = [
   },
   {
     id: 'sustainability',
-    title: bi('صمّم اليوم مع مراعاة الغد', 'Design today with tomorrow in mind'),
+    title: bi('ابنِ بيتك ليس لليوم وإنما للمستقبل', 'Design today with tomorrow in mind'),
     short: bi('الموارد', 'Resources'),
     body: bi(
       'ضع العزل واستخدام المواد وتفاصيل الموقع ضمن قراراتك المبكرة. النتائج البيئية تعتمد على تصميم المبنى وتنفيذه وتشغيله بالكامل.',
@@ -192,10 +196,7 @@ export const sections = [
     id: 'contact-card',
     title: bi('لنتحدث عن مشروعك', 'Let’s discuss your project'),
     short: bi('تواصل', 'Contact'),
-    body: bi(
-      'الأولى للتنمية والاستثمار • نظام وتد',
-      'Al Oula Development & Investment • WATAD system',
-    ),
+    body: bi(`${companyName.ar} • نظام وتد`, 'Al Oula Development & Investment • WATAD system'),
   },
 ] as const;
 export const ui = {
@@ -234,7 +235,7 @@ export const ui = {
   local: bi('تطبيقات في عُمان', 'Applications in Oman'),
   back: bi('العودة إلى العرض', 'Back to presentation'),
   mail: bi('اكتب إلى الفريق', 'Email the team'),
-  website: bi('الموقع الرسمي للأولى', 'Al Oula official website'),
+  website: bi(`موقع ${companyName.ar}`, 'Al Oula official website'),
   qr: bi('امسح لفتح العرض', 'Scan to open the presentation'),
   copied: bi('تم نسخ الرابط', 'Link copied'),
   copy: bi('نسخ رابط العرض', 'Copy presentation link'),
@@ -263,7 +264,7 @@ export const audiences = [
   },
   {
     icon: 'building',
-    title: bi('التطوير والضيافة', 'Development & hospitality'),
+    title: bi('المطورين العقاريين والضيافة', 'Development & hospitality'),
     body: bi(
       'تنظيم التنفيذ وتكرار الوحدات ومقارنة المشروع.',
       'Delivery planning, repeated units and project comparison.',
@@ -272,7 +273,7 @@ export const audiences = [
   },
   {
     icon: 'compass',
-    title: bi('المعماري والاستشاري', 'Architects & consultants'),
+    title: bi('المهندسين المعماريين', 'Architects & consultants'),
     body: bi(
       'العناصر والتفاصيل والأدلة الفنية المتاحة.',
       'Elements, details and available technical evidence.',
@@ -281,7 +282,7 @@ export const audiences = [
   },
   {
     icon: 'tool',
-    title: bi('المقاول وفريق الموقع', 'Contractors & site teams'),
+    title: bi('المقاولين', 'Contractors & site teams'),
     body: bi(
       'فهم مراحل التركيب والربط والتنسيق.',
       'Understand assembly, connections and coordination.',

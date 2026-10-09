@@ -30,17 +30,17 @@ The Pages workflow verifies all three browser engines before deployment from `ma
 - Six generated architectural concepts are labelled as illustrations.
 - The elements section uses six supplied WATAD cutaway renders, with transparent WebP images and matching preview selectors.
 - The time doughnut and normalized programme bars show Al Oula’s 60% shorter construction-time comparison (100 → 40 reference units), with cost savings up to 25% depending on specifications and project size. Sound and calculated thermal values identify the specific assemblies in Emmedue Panel Specifications, Rev. 05, 01/14.
-- Thermal percentages compare the stated WATAD walls with a derived international 220 mm hollow-block reference using Bahrain EWA layer properties. The expandable source note distinguishes this from the requested 200 mm finished Oman wall and from cooling-energy savings. Acoustic evidence identifies the original 45 dB(A) gross test result; no unsupported percentage or STC/Rw equivalence is claimed.
+- Thermal percentages compare the stated WATAD walls with a derived international 220 mm hollow-block reference using Bahrain EWA layer properties. The expandable source note names this reference and distinguishes wall heat-transfer comparisons from cooling-energy savings. Acoustic evidence identifies the original 45 dB(A) gross test result; no unsupported percentage or STC/Rw equivalence is claimed.
 - Bilingual sections, case captions and contact links: `web/src/content.ts` and `web/src/App.tsx`.
 - Collection browser and evidence-labelled charts: `web/src/Gallery.tsx`, `web/src/gallery-data.json` and `web/src/Metrics.tsx`.
 - Typography, surfaces and responsive layout: `web/src/style.css`.
-- SVG brand assets, QR, icons and social cards: `web/public/brand/`.
+- Approved WATAD artwork, SVG QR, icons and social cards: `web/public/brand/`.
 - WebP image derivatives and illustrative GLB models: `web/public/media/` and `web/public/models/`.
 - Static metadata and language routes: `web/scripts/prerender.mjs`.
 
 The models and renders are conceptual illustrations, not project drawings or construction instructions. International references illustrate the system and are not represented as Al Oula-delivered projects. Commercial comparison figures are attributed to Al Oula; acoustic test results and calculated U-values retain their manufacturer-specification source and assembly conditions. They are not universal guarantees or measured daily assembly rates.
 
-Brand marks are vector reconstructions of the supplied presentation artwork. Brand and project-image rights remain with their respective owners. Fonts are distributed with their OFL licences. Country flags use `lipis/flag-icons` under its included MIT licence. The reference-map land geometry is Natural Earth public-domain data.
+The WATAD logo uses the approved artwork supplied by Al Oula, delivered as WebP without redrawing. The Al Oula mark remains a vector reconstruction of the supplied presentation artwork. Brand and project-image rights remain with their respective owners. Fonts are distributed with their OFL licences. Country flags use `lipis/flag-icons` under its included MIT licence. The reference-map land geometry is Natural Earth public-domain data.
 
 ## Presentation controls
 

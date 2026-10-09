@@ -17,6 +17,7 @@ import {
   blockU,
   thermalComparison,
   acousticSource,
+  companyName,
   type PerformanceMetric,
   type Locale,
   type CaseRecord,
@@ -516,7 +517,14 @@ export default function App({ locale, caseId }: PageProps) {
         href={`${BASE}${locale}/`}
         aria-label={locale === 'ar' ? 'وتد، الصفحة الرئيسية' : 'WATAD home'}
       >
-        <img src={asset('brand/watad.svg')} width="100" height="56" alt="WATAD وتد" />
+        <img
+          src={asset('brand/watad-approved-w320.webp')}
+          srcSet={`${asset('brand/watad-approved-w320.webp')} 320w, ${asset('brand/watad-approved-w640.webp')} 640w, ${asset('brand/watad-approved.webp')} 1677w`}
+          sizes="100px"
+          width="100"
+          height="56"
+          alt="WATAD وتد"
+        />
         <span>
           {locale === 'ar' ? 'نظام بناء. تفاصيل متكاملة.' : 'A building system. Connected details.'}
         </span>
@@ -575,8 +583,15 @@ export default function App({ locale, caseId }: PageProps) {
   const card = (
     <div className="business-card">
       <div className="business-brand">
-        <img src={asset('brand/al-oula.svg')} width="178" height="79" alt="Al Oula الأولى" />
-        <img src={asset('brand/watad.svg')} width="91" height="51" alt="WATAD وتد" />
+        <img src={asset('brand/al-oula.svg')} width="178" height="79" alt={companyName[locale]} />
+        <img
+          src={asset('brand/watad-approved-w320.webp')}
+          srcSet={`${asset('brand/watad-approved-w320.webp')} 320w, ${asset('brand/watad-approved-w640.webp')} 640w, ${asset('brand/watad-approved.webp')} 1677w`}
+          sizes="94px"
+          width="91"
+          height="51"
+          alt="WATAD وتد"
+        />
       </div>
       <div className="business-content">
         <div>
@@ -709,7 +724,7 @@ export default function App({ locale, caseId }: PageProps) {
               <Icon name="layers" />
               <span>
                 {locale === 'ar'
-                  ? 'من اللوح إلى المساحة التي تعيشها'
+                  ? 'من خرسانة إلى مساحة للراحة والسكينة'
                   : 'From a panel to the space you live in'}
               </span>
             </div>
@@ -765,7 +780,7 @@ export default function App({ locale, caseId }: PageProps) {
                 src={asset('brand/al-oula.svg')}
                 width="178"
                 height="79"
-                alt="Al Oula الأولى"
+                alt={companyName[locale]}
               />
               <p>
                 {locale === 'ar' ? 'التصنيع والتوريد في عُمان' : 'Manufacturing & supply in Oman'}
@@ -1203,7 +1218,7 @@ export default function App({ locale, caseId }: PageProps) {
               biText(
                 'افتح النقاش',
                 'Start the discussion',
-                'أرسل الملخص إلى فريق الأولى.',
+                `أرسل الملخص إلى فريق ${companyName.ar}.`,
                 'Email your brief to Al Oula.',
               ),
             ].map((b, i) => (

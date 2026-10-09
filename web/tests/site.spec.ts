@@ -393,7 +393,9 @@ test('performance charts retain their arithmetic, assembly qualifiers and separa
     await expect(floor).not.toContainText('%');
     const source = section.locator('.metric-source');
     await expect(source).toContainText(
-      ar ? 'مقارنة الوقت والتكلفة من الأولى' : 'Time and cost comparison by Al Oula',
+      ar
+        ? 'مقارنة الوقت والتكلفة من الشركة الأولى للاستثمار والتطوير'
+        : 'Time and cost comparison by Al Oula',
     );
     await expect(source).toContainText(
       ar

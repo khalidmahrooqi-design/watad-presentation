@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { render, cases, sections, BASE, SITE, ORIGIN } from '../.ssr/render.js';
+import { render, cases, sections, companyName, BASE, SITE, ORIGIN } from '../.ssr/render.js';
 const out = path.resolve('dist');
 const manifest = JSON.parse(await fs.readFile(path.join(out, '.vite/manifest.json'), 'utf8'));
 const entry = manifest['index.html'];
@@ -25,19 +25,21 @@ for (const record of routes) {
   const title = c
     ? `${c.name[locale]} | WATAD ${locale === 'ar' ? 'وتد' : 'by Al Oula'}`
     : locale === 'ar'
-      ? 'وتد | ابنِ لراحة تدوم — الأولى، عُمان'
+      ? `وتد | ${sections[0].title.ar} — ${companyName.ar}، عُمان`
       : 'WATAD | Build for lasting comfort — Al Oula, Oman';
   const description = c ? c.caption[locale] : sections[0].body[locale];
   const ar = SITE + `ar/${caseId ? `cases/${caseId}/` : ''}`,
     en = SITE + `en/${caseId ? `cases/${caseId}/` : ''}`;
   const og = SITE + `brand/og-${locale}${caseId ? '-' + caseId : ''}.webp`;
+  const siteName = locale === 'ar' ? `وتد | ${companyName.ar}` : 'WATAD by Al Oula';
   const jsonld = {
     '@context': 'https://schema.org',
     '@graph': [
       {
         '@type': 'Organization',
         '@id': SITE + '#organization',
-        name: 'Al Oula Development & Investment',
+        name: companyName[locale],
+        alternateName: companyName[locale === 'ar' ? 'en' : 'ar'],
         url: 'https://www.aloulaidc.om/',
         email: 'info@aloulaidc.om',
         logo: SITE + 'brand/al-oula.svg',
@@ -47,7 +49,7 @@ for (const record of routes) {
         '@type': 'WebSite',
         '@id': SITE + '#website',
         url: SITE,
-        name: 'WATAD by Al Oula',
+        name: siteName,
         inLanguage: ['ar', 'en'],
         publisher: { '@id': SITE + '#organization' },
       },
@@ -69,7 +71,7 @@ for (const record of routes) {
 <meta name="theme-color" content="#17212b" media="(prefers-color-scheme:dark)"/><meta name="theme-color" content="#e8edf2" media="(prefers-color-scheme:light)"/>
 <meta name="application-name" content="WATAD"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-title" content="WATAD"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/><meta name="format-detection" content="telephone=no"/>
 <link rel="canonical" href="${canonical}"/><link rel="alternate" hreflang="ar" href="${ar}"/><link rel="alternate" hreflang="en" href="${en}"/><link rel="alternate" hreflang="x-default" href="${SITE}${caseId ? 'ar/cases/' + caseId + '/' : ''}"/>
-<meta property="og:type" content="website"/><meta property="og:site_name" content="WATAD by Al Oula"/><meta property="og:title" content="${esc(title)}"/><meta property="og:description" content="${esc(description)}"/><meta property="og:url" content="${canonical}"/><meta property="og:locale" content="${locale === 'ar' ? 'ar_OM' : 'en_GB'}"/><meta property="og:locale:alternate" content="${locale === 'ar' ? 'en_GB' : 'ar_OM'}"/><meta property="og:image" content="${og}"/><meta property="og:image:secure_url" content="${og}"/><meta property="og:image:type" content="image/webp"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image:alt" content="${esc(title)}"/>
+<meta property="og:type" content="website"/><meta property="og:site_name" content="${esc(siteName)}"/><meta property="og:title" content="${esc(title)}"/><meta property="og:description" content="${esc(description)}"/><meta property="og:url" content="${canonical}"/><meta property="og:locale" content="${locale === 'ar' ? 'ar_OM' : 'en_GB'}"/><meta property="og:locale:alternate" content="${locale === 'ar' ? 'en_GB' : 'ar_OM'}"/><meta property="og:image" content="${og}"/><meta property="og:image:secure_url" content="${og}"/><meta property="og:image:type" content="image/webp"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image:alt" content="${esc(title)}"/>
 <meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="${esc(title)}"/><meta name="twitter:description" content="${esc(description)}"/><meta name="twitter:image" content="${og}"/><meta name="twitter:image:alt" content="${esc(title)}"/>
 <link rel="icon" href="${BASE}brand/favicon.svg" type="image/svg+xml"/><link rel="icon" href="${BASE}brand/favicon.ico" sizes="any"/><link rel="icon" href="${BASE}brand/icon-32.png" type="image/png" sizes="32x32"/><link rel="icon" href="${BASE}brand/icon-16.png" type="image/png" sizes="16x16"/><link rel="apple-touch-icon" href="${BASE}brand/icon-180.png" sizes="180x180"/><link rel="mask-icon" href="${BASE}brand/pinned-tab.svg" color="#17212b"/><link rel="manifest" href="${BASE}site.webmanifest"/>
 <link rel="preload" href="${BASE}fonts/${locale === 'ar' ? 'Tajawal' : 'Manrope'}.woff2" as="font" type="font/woff2" crossorigin/>${locale === 'ar' ? `<link rel="preload" href="${BASE}fonts/ArefRuqaa.woff2" as="font" type="font/woff2" crossorigin/>` : ''}
