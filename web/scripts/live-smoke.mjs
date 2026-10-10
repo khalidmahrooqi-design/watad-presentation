@@ -46,7 +46,7 @@ for (const route of [
         text.match(new RegExp(`<section\\b[^>]*\\bid="${id}"[^>]*>[\\s\\S]*?<\\/section>`))?.[0] ||
         '';
       for (const [sectionId, videoId] of [
-        ['construction-process', 'wa7dS2YSNvM'],
+        ['construction-process', route === 'en/' ? 'wa7dS2YSNvM' : 'ol1l4r8T22w'],
         ['performance-evidence', '4yfrkU9H2vo'],
       ]) {
         const content = section(sectionId);

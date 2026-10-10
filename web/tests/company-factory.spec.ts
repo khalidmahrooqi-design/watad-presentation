@@ -158,7 +158,7 @@ for (const locale of ['ar', 'en'] as const) {
   for (const video of [
     {
       section: 'construction-process',
-      id: 'wa7dS2YSNvM',
+      id: ar ? 'ol1l4r8T22w' : 'wa7dS2YSNvM',
       title: /WATAD.*installation/,
       fallback: ar ? 'شاهد على YouTube' : 'Watch on YouTube',
     },
@@ -202,6 +202,20 @@ for (const locale of ['ar', 'en'] as const) {
         expect(bounds.width).toBeGreaterThan(width * 0.7);
         expect(bounds.width / bounds.height).toBeCloseTo(16 / 9, 1);
         await expectContentToFit(section, `${locale}: video and fallback at ${width}px`);
+      }
+      if (video.section === 'construction-process') {
+        await page.locator('.language-button').click();
+        const destination = ar ? 'en' : 'ar';
+        const translatedVideo = ar ? 'wa7dS2YSNvM' : 'ol1l4r8T22w';
+        await expect(page).toHaveURL(new RegExp(`/${destination}/#construction-process$`));
+        await expect(frame).toHaveAttribute(
+          'src',
+          `https://www.youtube-nocookie.com/embed/${translatedVideo}?rel=0&hl=${destination}`,
+        );
+        await expect(section.locator('a[href^="https://www.youtube.com/watch"]')).toHaveAttribute(
+          'href',
+          `https://www.youtube.com/watch?v=${translatedVideo}`,
+        );
       }
       if (video.section === 'performance-evidence') {
         const cards = section.locator('.evidence-grid article');

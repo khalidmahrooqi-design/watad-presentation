@@ -30,7 +30,7 @@ The Pages workflow verifies all three browser engines before deployment from `ma
 - Five generated architectural concepts are labelled as illustrations.
 - The company and factory sections introduce Al Oula and its Khazaen location. The sourced Emmedue production-hall photograph is labelled as a technology reference, not a photograph of the Al Oula factory.
 - The elements section includes a selection of 14 supplied design-flexibility photographs with bilingual captions, arrows and thumbnails.
-- Installation and test films use lazy YouTube embeds with direct viewing links. The construction-process film replaces that section's previous 3D interaction.
+- Installation and test films use lazy YouTube embeds with direct viewing links. The installation film follows the website language: Arabic uses the translated film, and English keeps the original. The construction-process film replaces that section's previous 3D interaction.
 - Eight complete source PDFs are linked beside the relevant acoustic, fire, seismic, load, wind-impact, rainfall and lifespan information. `web/public/reports/manifest.json` records the approved files and hashes; the validator rejects unlisted PDFs and checks source integrity. Figures retain specimen and test conditions; the lifespan document is a manufacturer statement.
 - The elements section uses six supplied WATAD cutaway renders, with transparent WebP images and matching preview selectors.
 - The time doughnut and normalized programme bars show Al Oula’s 60% shorter construction-time comparison (100 → 40 reference units), with cost savings up to 25% depending on specifications and project size. Sound and calculated thermal values identify the specific assemblies in Emmedue Panel Specifications, Rev. 05, 01/14.

@@ -292,6 +292,7 @@ function ModelVisual({
 
 export default function App({ locale, caseId }: PageProps) {
   const rtl = locale === 'ar';
+  const installationVideoId = rtl ? 'ol1l4r8T22w' : 'wa7dS2YSNvM';
   const localCase = cases.find((c) => c.id === caseId);
   const [theme, setTheme] = useState('dark');
   const [paused, setPaused] = useState(false);
@@ -1007,10 +1008,10 @@ export default function App({ locale, caseId }: PageProps) {
           <Heading id="construction-process" locale={locale} />
           <div className="installation-video">
             <iframe
-              src={`https://www.youtube-nocookie.com/embed/wa7dS2YSNvM?rel=0&hl=${locale}`}
+              src={`https://www.youtube-nocookie.com/embed/${installationVideoId}?rel=0&hl=${locale}`}
               title={
                 locale === 'ar'
-                  ? 'فيديو تركيب ألواح وتد بتقنية Emmedue'
+                  ? 'فيديو تركيب ألواح وتد بتقنية Emmedue — باللغة العربية'
                   : 'WATAD panel installation with Emmedue technology'
               }
               width="1280"
@@ -1024,12 +1025,12 @@ export default function App({ locale, caseId }: PageProps) {
           <div className="installation-video-caption">
             <p>
               {locale === 'ar'
-                ? 'اللوح المفرد من Emmedue · تعرّف على النظام وتركيبه'
+                ? 'اللوح المفرد من Emmedue · شرح النظام وتركيبه باللغة العربية'
                 : 'The Emmedue Single Panel · Explore the system and its installation'}
             </p>
             <a
               className="text-link"
-              href="https://www.youtube.com/watch?v=wa7dS2YSNvM"
+              href={`https://www.youtube.com/watch?v=${installationVideoId}`}
               target="_blank"
               rel="noopener noreferrer"
             >
