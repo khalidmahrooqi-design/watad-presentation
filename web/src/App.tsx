@@ -327,7 +327,7 @@ export default function App({ locale, caseId }: PageProps) {
     } catch {
       /* Preferences remain usable when storage is unavailable. */
     }
-    const initial = storedTheme || document.documentElement.dataset.theme || 'dark';
+    const initial = storedTheme === 'light' ? 'light' : 'dark';
     setTheme(initial);
     setPaused(storedMotion);
     const mq = matchMedia('(prefers-reduced-motion: reduce)');
@@ -347,6 +347,9 @@ export default function App({ locale, caseId }: PageProps) {
   useEffect(() => {
     if (!preferencesReady) return;
     document.documentElement.dataset.theme = theme;
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', theme === 'light' ? '#e8edf2' : '#17212b');
     try {
       localStorage.setItem('watad-theme', theme);
     } catch {

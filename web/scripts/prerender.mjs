@@ -18,7 +18,7 @@ const routes = [
 ];
 for (const locale of ['ar', 'en'])
   for (const c of cases) routes.push({ route: `${locale}/cases/${c.id}/`, locale, caseId: c.id });
-const boot = `try{var t=localStorage.getItem('watad-theme');document.documentElement.dataset.theme=t||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.dataset.motion=(localStorage.getItem('watad-motion')==='paused'||matchMedia('(prefers-reduced-motion:reduce)').matches)?'paused':'active'}catch(e){}`;
+const boot = `try{var t=localStorage.getItem('watad-theme')==='light'?'light':'dark';document.documentElement.dataset.theme=t;document.querySelector('meta[name="theme-color"]').content=t==='light'?'#e8edf2':'#17212b';document.documentElement.dataset.motion=(localStorage.getItem('watad-motion')==='paused'||matchMedia('(prefers-reduced-motion:reduce)').matches)?'paused':'active'}catch(e){}`;
 for (const record of routes) {
   const { locale, caseId, route } = record;
   const c = cases.find((x) => x.id === caseId);
@@ -69,7 +69,7 @@ for (const record of routes) {
   const html = `<!doctype html><html lang="${locale}" dir="${locale === 'ar' ? 'rtl' : 'ltr'}" data-theme="dark" data-motion="active"><head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <title>${esc(title)}</title><meta name="description" content="${esc(description)}"/><meta name="robots" content="index,follow,max-image-preview:large"/>
-<meta name="theme-color" content="#17212b" media="(prefers-color-scheme:dark)"/><meta name="theme-color" content="#e8edf2" media="(prefers-color-scheme:light)"/>
+<meta name="theme-color" content="#17212b"/>
 <meta name="application-name" content="WATAD"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-title" content="WATAD"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/><meta name="format-detection" content="telephone=no"/>
 <link rel="canonical" href="${canonical}"/><link rel="alternate" hreflang="ar" href="${ar}"/><link rel="alternate" hreflang="en" href="${en}"/><link rel="alternate" hreflang="x-default" href="${SITE}${caseId ? 'ar/cases/' + caseId + '/' : ''}"/>
 <meta property="og:type" content="website"/><meta property="og:site_name" content="${esc(siteName)}"/><meta property="og:title" content="${esc(title)}"/><meta property="og:description" content="${esc(description)}"/><meta property="og:url" content="${canonical}"/><meta property="og:locale" content="${locale === 'ar' ? 'ar_OM' : 'en_GB'}"/><meta property="og:locale:alternate" content="${locale === 'ar' ? 'en_GB' : 'ar_OM'}"/><meta property="og:image" content="${og}"/><meta property="og:image:secure_url" content="${og}"/><meta property="og:image:type" content="image/webp"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image:alt" content="${esc(title)}"/>
