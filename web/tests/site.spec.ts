@@ -57,21 +57,28 @@ test('domain-root manifest and legacy links resolve to the intended page and sec
     const response = await request.get(new URL(url.pathname + url.search, baseURL!).href);
     await route.fulfill({ response });
   });
-  const legacy = Object.entries(legacyRoutes).find(([, destination]) => destination.includes('#'));
-  expect(
-    legacy,
-    'At least one previous company route must preserve its section destination',
-  ).toBeDefined();
-  const [legacyPath, destination] = legacy!;
-  const redirectResponse = await request.get(legacyPath + '/');
-  expect(redirectResponse.ok()).toBe(true);
-  expect(await redirectResponse.text()).toContain('data-watad-redirect');
-  await page.goto(legacyPath + '/');
-  await expect(page).toHaveURL(publicOrigin + destination);
-  await expect(page.locator(new URL(destination, publicOrigin).hash)).toBeInViewport();
-  await page.goto(new URL('/watad-presentation/en/#elements', baseURL!).href);
-  await expect(page).toHaveURL(publicOrigin + '/en/#elements');
-  await expect(page.locator('#elements')).toBeInViewport();
+  try {
+    const legacy = Object.entries(legacyRoutes).find(([, destination]) =>
+      destination.includes('#'),
+    );
+    expect(
+      legacy,
+      'At least one previous company route must preserve its section destination',
+    ).toBeDefined();
+    const [legacyPath, destination] = legacy!;
+    const redirectResponse = await request.get(legacyPath + '/');
+    expect(redirectResponse.ok()).toBe(true);
+    expect(await redirectResponse.text()).toContain('data-watad-redirect');
+    await page.goto(legacyPath + '/');
+    await expect(page).toHaveURL(publicOrigin + destination);
+    await expect(page.locator(new URL(destination, publicOrigin).hash)).toBeInViewport();
+    await page.goto(new URL('/watad-presentation/en/#elements', baseURL!).href);
+    await expect(page).toHaveURL(publicOrigin + '/en/#elements');
+    await expect(page.locator('#elements')).toBeInViewport();
+  } finally {
+    // Finish forwarded requests before Playwright disposes the request fixture.
+    await page.unrouteAll({ behavior: 'wait' });
+  }
 });
 test('theme, motion, dock, presentation and keyboard states persist correctly', async ({
   page,
