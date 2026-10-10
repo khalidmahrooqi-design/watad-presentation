@@ -18,6 +18,7 @@ type ImageRecord = {
   width: number;
   height: number;
   srcSet: { src: string; width: number }[];
+  caption?: Record<Locale, string>;
 };
 export const collections: Collection[] = collectionData;
 const cache = new Map<string, ImageRecord[]>();
@@ -148,7 +149,10 @@ export function Gallery({ collection, locale }: { collection: Collection; locale
             decoding="async"
             onLoad={() => setLoaded(true)}
             onError={() => setImageError(true)}
-            alt={`${collection.name[locale]} · ${collection.country[locale]} · ${ar ? 'صورة' : 'Photo'} ${index + 1}`}
+            alt={
+              photo.caption?.[locale] ||
+              `${collection.name[locale]} · ${collection.country[locale]} · ${ar ? 'صورة' : 'Photo'} ${index + 1}`
+            }
           />
         ) : (
           <img
@@ -202,6 +206,11 @@ export function Gallery({ collection, locale }: { collection: Collection; locale
           </button>
         </div>
       </div>
+      {photo?.caption && (
+        <p className="gallery-caption" aria-live="polite">
+          {photo.caption[locale]}
+        </p>
+      )}
       <div
         className="gallery-preview"
         role="group"

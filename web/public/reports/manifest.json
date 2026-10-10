@@ -1,0 +1,82 @@
+[
+  {
+    "id": "acoustic",
+    "file": "reports/acoustic-facade-psme80-2005.pdf",
+    "title": {
+      "ar": "العزل الصوتي للواجهة — PSME 80 (2005)",
+      "en": "Façade acoustics — PSME 80 (2005)"
+    },
+    "bytes": 21083,
+    "sha256": "5806916d40a988f6cfc6739fde4c804e0636f7db6720ab1792147acd37bd86ce"
+  },
+  {
+    "id": "fire",
+    "file": "reports/fire-psme80-csi-2003.pdf",
+    "title": {
+      "ar": "مقاومة الحريق — PSME 80 (2003)",
+      "en": "Fire resistance — PSME 80 (2003)"
+    },
+    "bytes": 1534143,
+    "sha256": "17135cdbd957d8b74ac1957280caab0c698c04feb2a6c8f0fb869ebd45ca0a8e"
+  },
+  {
+    "id": "wind",
+    "file": "reports/wind-projectile-2005.pdf",
+    "title": {
+      "ar": "اختبار اصطدام المقذوفات (2005)",
+      "en": "Wind-borne debris impact test (2005)"
+    },
+    "bytes": 800139,
+    "sha256": "384889343489aaed51c469bff2ad4d80045573b76cdbc3deeddb4ddecb176619"
+  },
+  {
+    "id": "rain",
+    "file": "reports/rainfall-idiem-1994.pdf",
+    "title": {
+      "ar": "اختبار الأمطار الاصطناعية (1994)",
+      "en": "Artificial rainfall test (1994)"
+    },
+    "bytes": 38848,
+    "sha256": "204f14671f0872edfd94974fab416ebf7208ca153a2e818766d7d71003cfda47"
+  },
+  {
+    "id": "seismic",
+    "file": "reports/seismic-enea-2009.pdf",
+    "title": {
+      "ar": "اختبارات طاولة الاهتزاز — ENEA (2009)",
+      "en": "Shake-table tests — ENEA (2009)"
+    },
+    "bytes": 2469692,
+    "sha256": "23879b37c332f47171b65f59d6195a43ec815172482860b602fbc76ea42a1c05"
+  },
+  {
+    "id": "static",
+    "file": "reports/static-panels-eucentre-2008.pdf",
+    "title": {
+      "ar": "الاختبارات الساكنة — 12 عينة (2008)",
+      "en": "Static tests — 12 specimens (2008)"
+    },
+    "bytes": 2066450,
+    "sha256": "e672bc363cf24e721d4c2af395cab8803c705ccbba7931fc9575e6c0bac3bc4b"
+  },
+  {
+    "id": "cyclic",
+    "file": "reports/cyclic-panels-eucentre-2008.pdf",
+    "title": {
+      "ar": "الاختبارات الدورية — 8 ألواح (2008)",
+      "en": "Cyclic tests — 8 panels (2008)"
+    },
+    "bytes": 2228328,
+    "sha256": "95ea1493f14ce2394107ab337f02a0a3de8b580b1ba4c61af0844811fe69c6a6"
+  },
+  {
+    "id": "durability",
+    "file": "reports/durability-emmedue-2025.pdf",
+    "title": {
+      "ar": "بيان الشركة المصنّعة بشأن العمر الإنشائي (2025)",
+      "en": "Manufacturer’s structural-lifespan statement (2025)"
+    },
+    "bytes": 435804,
+    "sha256": "1b47dd40c741f43e3e9ca955f2eaf07077f875d376c026273d4c8a265ece1b45"
+  }
+]

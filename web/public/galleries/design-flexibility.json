@@ -1,0 +1,291 @@
+{
+  "id": "design-flexibility",
+  "images": [
+    {
+      "id": "222f1a9f5bccf144",
+      "src": "media/gallery/222f1a9f5bccf144-w464.webp",
+      "thumb": "media/gallery/222f1a9f5bccf144-thumb.webp",
+      "width": 464,
+      "height": 572,
+      "srcSet": [
+        {
+          "src": "media/gallery/222f1a9f5bccf144-w464.webp",
+          "width": 464
+        }
+      ],
+      "caption": {
+        "ar": "كتلة معمارية بخطوط مائلة وفتحات واسعة",
+        "en": "Angular building form with broad openings"
+      }
+    },
+    {
+      "id": "543dfb6cf7c67a24",
+      "src": "media/gallery/543dfb6cf7c67a24-w1959.webp",
+      "thumb": "media/gallery/543dfb6cf7c67a24-thumb.webp",
+      "width": 1959,
+      "height": 1642,
+      "srcSet": [
+        {
+          "src": "media/gallery/543dfb6cf7c67a24-w960.webp",
+          "width": 960
+        },
+        {
+          "src": "media/gallery/543dfb6cf7c67a24-w1959.webp",
+          "width": 1959
+        }
+      ],
+      "caption": {
+        "ar": "واجهات منحنية وتفاصيل فندق El Blok في بورتوريكو",
+        "en": "Curved façades and details at El Blok Hotel, Puerto Rico"
+      }
+    },
+    {
+      "id": "f0ac86b03ebbda37",
+      "src": "media/gallery/f0ac86b03ebbda37-w457.webp",
+      "thumb": "media/gallery/f0ac86b03ebbda37-thumb.webp",
+      "width": 457,
+      "height": 579,
+      "srcSet": [
+        {
+          "src": "media/gallery/f0ac86b03ebbda37-w457.webp",
+          "width": 457
+        }
+      ],
+      "caption": {
+        "ar": "تشكيل قوس بالألواح خلال التنفيذ",
+        "en": "Panel arch during construction"
+      }
+    },
+    {
+      "id": "27ad7eb36aba7da6",
+      "src": "media/gallery/27ad7eb36aba7da6-w2048.webp",
+      "thumb": "media/gallery/27ad7eb36aba7da6-thumb.webp",
+      "width": 2048,
+      "height": 1447,
+      "srcSet": [
+        {
+          "src": "media/gallery/27ad7eb36aba7da6-w960.webp",
+          "width": 960
+        },
+        {
+          "src": "media/gallery/27ad7eb36aba7da6-w2048.webp",
+          "width": 2048
+        }
+      ],
+      "caption": {
+        "ar": "تصميم سكني في الإكوادور من التنفيذ إلى التشطيب",
+        "en": "Residential design in Ecuador, from construction to finishes"
+      }
+    },
+    {
+      "id": "b21da5bebe2f961e",
+      "src": "media/gallery/b21da5bebe2f961e-w2048.webp",
+      "thumb": "media/gallery/b21da5bebe2f961e-thumb.webp",
+      "width": 2048,
+      "height": 1447,
+      "srcSet": [
+        {
+          "src": "media/gallery/b21da5bebe2f961e-w960.webp",
+          "width": 960
+        },
+        {
+          "src": "media/gallery/b21da5bebe2f961e-w2048.webp",
+          "width": 2048
+        }
+      ],
+      "caption": {
+        "ar": "أسقف منحنية في مشروع Arroyo Water Front ببورتوريكو",
+        "en": "Curved roofs at Arroyo Water Front, Puerto Rico"
+      }
+    },
+    {
+      "id": "b4b9ee613a4ba024",
+      "src": "media/gallery/b4b9ee613a4ba024-w1125.webp",
+      "thumb": "media/gallery/b4b9ee613a4ba024-thumb.webp",
+      "width": 1125,
+      "height": 1088,
+      "srcSet": [
+        {
+          "src": "media/gallery/b4b9ee613a4ba024-w960.webp",
+          "width": 960
+        },
+        {
+          "src": "media/gallery/b4b9ee613a4ba024-w1125.webp",
+          "width": 1125
+        }
+      ],
+      "caption": {
+        "ar": "جدران منحنية قبل التشطيب وبعده",
+        "en": "Curved walls before and after finishing"
+      }
+    },
+    {
+      "id": "80d5f72015afe196",
+      "src": "media/gallery/80d5f72015afe196-w1125.webp",
+      "thumb": "media/gallery/80d5f72015afe196-thumb.webp",
+      "width": 1125,
+      "height": 1081,
+      "srcSet": [
+        {
+          "src": "media/gallery/80d5f72015afe196-w960.webp",
+          "width": 960
+        },
+        {
+          "src": "media/gallery/80d5f72015afe196-w1125.webp",
+          "width": 1125
+        }
+      ],
+      "caption": {
+        "ar": "تشكيل سقف مقوس بالألواح",
+        "en": "A curved panel roof under construction"
+      }
+    },
+    {
+      "id": "6c9694e2e03364b1",
+      "src": "media/gallery/6c9694e2e03364b1-w1624.webp",
+      "thumb": "media/gallery/6c9694e2e03364b1-thumb.webp",
+      "width": 1624,
+      "height": 1117,
+      "srcSet": [
+        {
+          "src": "media/gallery/6c9694e2e03364b1-w960.webp",
+          "width": 960
+        },
+        {
+          "src": "media/gallery/6c9694e2e03364b1-w1624.webp",
+          "width": 1624
+        }
+      ],
+      "caption": {
+        "ar": "واجهة ذات شكل نحتي وفتحات متنوعة",
+        "en": "Sculptural façade with varied openings"
+      }
+    },
+    {
+      "id": "7506783fb2b0647b",
+      "src": "media/gallery/7506783fb2b0647b-w1694.webp",
+      "thumb": "media/gallery/7506783fb2b0647b-thumb.webp",
+      "width": 1694,
+      "height": 1087,
+      "srcSet": [
+        {
+          "src": "media/gallery/7506783fb2b0647b-w960.webp",
+          "width": 960
+        },
+        {
+          "src": "media/gallery/7506783fb2b0647b-w1694.webp",
+          "width": 1694
+        }
+      ],
+      "caption": {
+        "ar": "واجهة طويلة تجمع الخطوط المستقيمة والمنحنية",
+        "en": "An extended façade combining straight and curved lines"
+      }
+    },
+    {
+      "id": "0a024ff5199564b8",
+      "src": "media/gallery/0a024ff5199564b8-w1694.webp",
+      "thumb": "media/gallery/0a024ff5199564b8-thumb.webp",
+      "width": 1694,
+      "height": 1105,
+      "srcSet": [
+        {
+          "src": "media/gallery/0a024ff5199564b8-w960.webp",
+          "width": 960
+        },
+        {
+          "src": "media/gallery/0a024ff5199564b8-w1694.webp",
+          "width": 1694
+        }
+      ],
+      "caption": {
+        "ar": "كتلة معمارية مميزة من زاوية جانبية",
+        "en": "A distinctive building form viewed from the side"
+      }
+    },
+    {
+      "id": "2ed27935b0b24147",
+      "src": "media/gallery/2ed27935b0b24147-w1579.webp",
+      "thumb": "media/gallery/2ed27935b0b24147-thumb.webp",
+      "width": 1579,
+      "height": 974,
+      "srcSet": [
+        {
+          "src": "media/gallery/2ed27935b0b24147-w960.webp",
+          "width": 960
+        },
+        {
+          "src": "media/gallery/2ed27935b0b24147-w1579.webp",
+          "width": 1579
+        }
+      ],
+      "caption": {
+        "ar": "سقف قوسي مستمر فوق مبنى صغير",
+        "en": "A continuous arched roof over a compact building"
+      }
+    },
+    {
+      "id": "882ad3bd5937e8b0",
+      "src": "media/gallery/882ad3bd5937e8b0-w1512.webp",
+      "thumb": "media/gallery/882ad3bd5937e8b0-thumb.webp",
+      "width": 1512,
+      "height": 985,
+      "srcSet": [
+        {
+          "src": "media/gallery/882ad3bd5937e8b0-w960.webp",
+          "width": 960
+        },
+        {
+          "src": "media/gallery/882ad3bd5937e8b0-w1512.webp",
+          "width": 1512
+        }
+      ],
+      "caption": {
+        "ar": "واجهة منحنية بفتحات مائلة بعد التشطيب",
+        "en": "Finished curved façade with angled openings"
+      }
+    },
+    {
+      "id": "847767a95c35f5b0",
+      "src": "media/gallery/847767a95c35f5b0-w1539.webp",
+      "thumb": "media/gallery/847767a95c35f5b0-thumb.webp",
+      "width": 1539,
+      "height": 995,
+      "srcSet": [
+        {
+          "src": "media/gallery/847767a95c35f5b0-w960.webp",
+          "width": 960
+        },
+        {
+          "src": "media/gallery/847767a95c35f5b0-w1539.webp",
+          "width": 1539
+        }
+      ],
+      "caption": {
+        "ar": "تشكيل واجهة منحنية وفتحاتها أثناء التركيب",
+        "en": "Curved façade and openings during panel installation"
+      }
+    },
+    {
+      "id": "2da80329af232a34",
+      "src": "media/gallery/2da80329af232a34-w1543.webp",
+      "thumb": "media/gallery/2da80329af232a34-thumb.webp",
+      "width": 1543,
+      "height": 994,
+      "srcSet": [
+        {
+          "src": "media/gallery/2da80329af232a34-w960.webp",
+          "width": 960
+        },
+        {
+          "src": "media/gallery/2da80329af232a34-w1543.webp",
+          "width": 1543
+        }
+      ],
+      "caption": {
+        "ar": "تجميع ألواح قبة وتفاصيل وصلاتها",
+        "en": "Dome panel assembly and connection details"
+      }
+    }
+  ]
+}

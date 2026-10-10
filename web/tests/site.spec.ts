@@ -14,7 +14,7 @@ test('Arabic and English static content, metadata and contact actions', async ({
     expect(html).toContain('hreflang="ar"');
     await page.goto(`${locale}/`);
     await expect(page.locator('html')).toHaveAttribute('dir', locale === 'ar' ? 'rtl' : 'ltr');
-    await expect(page.locator('section')).toHaveCount(15);
+    await expect(page.locator('section')).toHaveCount(17);
     await expect(page.locator('h1')).toHaveCount(1);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       'href',
@@ -217,7 +217,7 @@ test('all case collections stay on the page with arrows and nearby previews', as
     );
   }
   await page.getByRole('link', { name: 'Back to presentation' }).click();
-  await expect(page.locator('section')).toHaveCount(15);
+  await expect(page.locator('section')).toHaveCount(17);
   await page.locator('details').first().locator('summary').click();
   await expect(page.locator('details').first()).toHaveAttribute('open', '');
   const range = page.getByRole('slider', { name: 'Separate layers' });
@@ -235,7 +235,7 @@ test('no-JavaScript and reduced-motion versions retain content', async ({ browse
   });
   const p = await ctx.newPage();
   await p.goto('ar/');
-  await expect(p.locator('section')).toHaveCount(15);
+  await expect(p.locator('section')).toHaveCount(17);
   await expect(p.locator('#contact-card .qr-block')).toBeAttached();
   await ctx.close();
   const reduced = await browser.newContext({ baseURL, reducedMotion: 'reduce' });
@@ -302,7 +302,7 @@ test('interactive models remount cleanly and preserve one canvas', async ({
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('en/');
-  for (const id of ['system-layers', 'construction-process', 'sustainability']) {
+  for (const id of ['system-layers', 'sustainability']) {
     const section = page.locator('#' + id);
     await section.scrollIntoViewIfNeeded();
     await section.getByRole('button', { name: 'Explore in 3D' }).click();
@@ -525,7 +525,7 @@ test('performance charts retain their arithmetic, assembly qualifiers and separa
         [],
       );
     }
-    await expect(page.locator('.section-concept')).toHaveCount(6);
+    await expect(page.locator('.section-concept')).toHaveCount(5);
   }
 });
 
@@ -645,7 +645,7 @@ test('supplied element renders stay mapped, readable and keyboard selectable in 
     }
 });
 
-test('construction stages and model rotation redraw cleanly', async ({ page, browserName }) => {
+test('system model rotation and reset redraw cleanly', async ({ page, browserName }) => {
   test.skip(browserName !== 'chromium', 'Visual GPU checks run on Chromium and actual Edge.');
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
@@ -666,21 +666,6 @@ test('construction stages and model rotation redraw cleanly', async ({ page, bro
   expect(rotated.equals(prior)).toBe(false);
   await layers.getByRole('button', { name: 'Reset view' }).click();
   expect((await canvas.screenshot()).equals(rotated)).toBe(false);
-  const process = page.locator('#construction-process');
-  await process.locator('.model-frame').scrollIntoViewIfNeeded();
-  await process.getByRole('button', { name: 'Explore in 3D', exact: true }).click();
-  await expect(process.locator('[data-scene-status]')).toHaveAttribute(
-    'data-scene-status',
-    'ready',
-  );
-  const stages = process.locator('.stage-buttons button');
-  await stages.last().click();
-  await process.locator('canvas').scrollIntoViewIfNeeded();
-  const finish = await process.locator('canvas').screenshot();
-  await stages.first().click();
-  await process.locator('canvas').scrollIntoViewIfNeeded();
-  const foundation = await process.locator('canvas').screenshot();
-  expect(finish.equals(foundation)).toBe(false);
   await expect(page.locator('canvas')).toHaveCount(1);
   expect(errors).toEqual([]);
 });

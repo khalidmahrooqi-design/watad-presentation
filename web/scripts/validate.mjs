@@ -1,8 +1,11 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
+import { createHash } from 'node:crypto';
 import { legacyRoutes, prefixAliases } from './legacy-routes.mjs';
 const root = path.resolve('dist');
+const reportManifest = JSON.parse(await fs.readFile('public/reports/manifest.json', 'utf8'));
+const approvedReportFiles = new Set(reportManifest.map((report) => report.file));
 const origin = 'https://www.aloulaidc.om';
 const redirects = { ...legacyRoutes, ...prefixAliases };
 const checkedRedirects = new Set();
@@ -84,7 +87,10 @@ async function walk(dir) {
       bytes += stat.size;
       count++;
       const rel = path.relative(root, file);
-      if (/\.(pdf|blend|ttf|jpe?g|map|log)$/i.test(rel))
+      if (
+        /\.(blend|ttf|jpe?g|map|log)$/i.test(rel) ||
+        (/\.pdf$/i.test(rel) && !approvedReportFiles.has(rel))
+      )
         errors.push(`Unexpected public file: ${rel}`);
       if (/\.(html|js|json|svg|css|xml)$/.test(file)) {
         const text = await fs.readFile(file, 'utf8');
@@ -147,10 +153,13 @@ for (const [id, render] of Object.entries(elementRenders)) {
   if (thumbnail.width !== 160 || !thumbnail.hasAlpha)
     errors.push(`Invalid element thumbnail: ${id}`);
 }
-for (const locale of ['ar', 'en']) {
+for (const locale of ['', 'ar', 'en']) {
   const text = await fs.readFile(path.join(root, locale, 'index.html'), 'utf8');
-  const count = (text.match(/<section /g) || []).length;
-  if (count !== 15) errors.push(`${locale}: expected 15 sections, got ${count}`);
+  const sections = [...text.matchAll(/<section\b[^>]*>/g)].map(([tag]) => attr(tag, 'id'));
+  if (sections.length !== 17)
+    errors.push(`${locale || 'root'}: expected 17 sections, got ${sections.length}`);
+  if (sections.slice(0, 4).join(',') !== 'hero,about-al-oula,factory,applications')
+    errors.push(`${locale || 'root'}: company and factory must follow the hero`);
 }
 for (const file of ['panel.glb', 'elements.glb', 'building.glb']) {
   const p = path.join(root, 'models', file);
@@ -193,6 +202,64 @@ for (const collection of collections) {
 }
 if (photos !== 639) errors.push('Expected 639 gallery photos, got ' + photos);
 console.log('Gallery coverage: ' + photos + ' photos in ' + collections.length + ' collections.');
+const factory = JSON.parse(
+  await fs.readFile(path.join(root, 'galleries', 'mdue-production.json'), 'utf8'),
+);
+if (factory.id !== 'mdue-production' || factory.images?.length !== 1)
+  errors.push('Expected the single sourced Emmedue factory photograph');
+for (const photo of factory.images || []) {
+  if (photo.width !== 2000 || photo.height !== 900)
+    errors.push('Factory source dimensions must remain 2000 × 900');
+  if (!/[\u0600-\u06ff]/.test(photo.caption?.ar || '') || !/[A-Za-z]/.test(photo.caption?.en || ''))
+    errors.push('Factory photograph requires Arabic and English captions');
+  for (const src of new Set([photo.src, photo.thumb, ...photo.srcSet.map((s) => s.src)])) {
+    if (!/^images\/factory\/[a-z0-9-]+\.webp$/.test(src)) {
+      errors.push('Invalid factory asset: ' + src);
+      continue;
+    }
+    try {
+      const metadata = await sharp(path.join(root, src)).metadata();
+      if (metadata.format !== 'webp') errors.push('Factory asset must be WebP: ' + src);
+      if (src === photo.src && (metadata.width !== photo.width || metadata.height !== photo.height))
+        errors.push('Factory source dimensions disagree with its manifest: ' + src);
+    } catch {
+      errors.push('Missing or unreadable factory asset: ' + src);
+    }
+  }
+  if (photo.srcSet.map((variant) => variant.width).join(',') !== '640,960,2000')
+    errors.push('Factory responsive widths must be 640, 960 and 2000');
+  for (const variant of photo.srcSet) await checkWidth(variant.src, variant.width);
+  await checkWidth(photo.thumb, 320);
+}
+console.log('Factory coverage: one sourced photograph with all responsive variants.');
+for (const report of reportManifest) {
+  if (!/^reports\/[a-z0-9-]+\.pdf$/.test(report.file)) throw Error('Invalid report path');
+  const data = await fs.readFile(path.join(root, report.file));
+  if (
+    data.subarray(0, 5).toString() !== '%PDF-' ||
+    data.length !== report.bytes ||
+    createHash('sha256').update(data).digest('hex') !== report.sha256
+  )
+    errors.push('Report differs from the reviewed source: ' + report.id);
+  for (const locale of ['ar', 'en']) {
+    const html = await fs.readFile(path.join(root, locale, 'index.html'), 'utf8');
+    if (!report.title[locale] || !html.includes(`href="/${report.file}"`))
+      errors.push(`Missing report title or link: ${locale}/${report.id}`);
+  }
+}
+const design = JSON.parse(
+  await fs.readFile(path.join(root, 'galleries/design-flexibility.json'), 'utf8'),
+);
+if (design.images.length !== 14 || new Set(design.images.map((photo) => photo.id)).size !== 14)
+  errors.push('Expected 14 distinct supplied design photographs');
+for (const photo of design.images) {
+  if (!photoIds.has(photo.id) || !photo.caption.ar || !photo.caption.en)
+    errors.push('Invalid design photograph or caption: ' + photo.id);
+  for (const variant of photo.srcSet) await checkWidth(variant.src, variant.width);
+}
+console.log(
+  `Reports: ${reportManifest.length} complete PDFs verified by hash. Design gallery: 14 supplied photographs.`,
+);
 if (errors.length) {
   console.error(errors.join('\n'));
   process.exit(1);

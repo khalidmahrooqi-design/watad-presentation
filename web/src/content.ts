@@ -76,6 +76,27 @@ export const sections = [
     ),
   },
   {
+    id: 'about-al-oula',
+    title: bi('الخبرة وراء نظام وتد', 'The team behind WATAD'),
+    short: bi('عن الأولى', 'About Al Oula'),
+    body: bi(
+      `${companyName.ar} تجمع خبرات الاستثمار والتطوير العقاري والهندسة وإدارة التشييد. ومن خلال نظام وتد، تقدم للسوق العُماني تقنية بناء تربط التصنيع باحتياجات المشروع.`,
+      `${companyName.en} brings together investment, property development, engineering and construction management expertise. Through WATAD, Al Oula brings panel manufacturing and project needs together in Oman.`,
+    ),
+  },
+  {
+    id: 'factory',
+    title: bi(
+      'صناعة في عُمان. جاهزية لمشروعك.',
+      'Manufactured in Oman. Prepared for your project.',
+    ),
+    short: bi('المصنع', 'The factory'),
+    body: bi(
+      'من مصنع وتد في مدينة خزائن الاقتصادية ببركاء، تتحول تقنية Emmedue الإيطالية إلى ألواح مصنّعة وفق متطلبات المشروع، ثم تُركّب في الموقع وتُستكمل بطبقات الخرسانة.',
+      'At the WATAD factory in Khazaen Economic City, Barka, Italian Emmedue technology becomes panels manufactured to project specifications, ready for site assembly and concrete application.',
+    ),
+  },
+  {
     id: 'applications',
     title: bi('ما الذي تريد بناءه؟', 'What do you want to build?'),
     short: bi('مشروعك', 'Your project'),
@@ -116,8 +137,8 @@ export const sections = [
     title: bi('شاهد الفكرة تتحول إلى مبنى', 'See the system become a building'),
     short: bi('التنفيذ', 'Construction'),
     body: bi(
-      'تتبّع المراحل في نموذج توضيحي، من التخطيط إلى التشطيب. مخططات المشروع وخطة التنفيذ المعتمدة تحدّدان التسلسل الفعلي.',
-      'Follow the stages in an illustrative model, from planning to finishing. Project drawings and the approved method statement determine the actual sequence.',
+      'شاهد فيديو Emmedue للتعرّف على اللوح المفرد ومراحل تركيبه، من تجهيز الألواح وربطها إلى تطبيق الخرسانة. مخططات المشروع وخطة التنفيذ المعتمدة تحدّدان التفاصيل الفعلية.',
+      'Watch the Emmedue video to explore the single panel and its installation, from preparing and connecting panels to applying concrete. Project drawings and the approved method statement determine the installation details.',
     ),
   },
   {
@@ -199,6 +220,51 @@ export const sections = [
     body: bi(`${companyName.ar} • نظام وتد`, 'Al Oula Development & Investment • WATAD system'),
   },
 ] as const;
+export type SectionId = (typeof sections)[number]['id'];
+export const sectionById = (id: SectionId) => sections.find((section) => section.id === id)!;
+export const companyExpertise = [
+  {
+    icon: 'compass',
+    title: bi('الاستثمار والتطوير', 'Investment & development'),
+    body: bi(
+      'خبرة في تقييم الفرص والتطوير العقاري.',
+      'Experience in appraisals and property development.',
+    ),
+  },
+  {
+    icon: 'building',
+    title: bi('الهندسة وإدارة التشييد', 'Engineering & construction management'),
+    body: bi(
+      'رؤية تربط متطلبات المشروع بمراحل البناء.',
+      'A project perspective that connects requirements with construction.',
+    ),
+  },
+  {
+    icon: 'layers',
+    title: bi('تقنيات بناء متقدمة', 'Advanced building technology'),
+    body: bi(
+      'نظام وتد بتقنية Emmedue الإيطالية وتصنيع في عُمان.',
+      'WATAD combines Italian Emmedue technology with manufacturing in Oman.',
+    ),
+  },
+];
+export const factoryProcess = [
+  {
+    title: bi('تشكيل القلب العازل', 'Shape the insulating core'),
+    body: bi('تجهيز ألواح EPS بالأبعاد المطلوبة.', 'EPS panels cut to the required dimensions.'),
+  },
+  {
+    title: bi('تجهيز الشبك الفولاذي', 'Prepare the steel mesh'),
+    body: bi('شبك ملحوم يحيط بالقلب العازل.', 'Welded mesh around the insulating core.'),
+  },
+  {
+    title: bi('تجميع اللوح', 'Assemble the panel'),
+    body: bi(
+      'ربط الشبك والقلب العازل استعداداً للتركيب في الموقع.',
+      'Mesh and insulation connected for site assembly.',
+    ),
+  },
+];
 export const ui = {
   explore: bi('اكتشف النظام', 'Explore the system'),
   contact: bi('ناقش مشروعك', 'Discuss your project'),

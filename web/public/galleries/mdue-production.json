@@ -1,0 +1,30 @@
+{
+  "id": "mdue-production",
+  "images": [
+    {
+      "id": "mdue-production-hall",
+      "src": "images/factory/emmedue-production-hall.webp",
+      "thumb": "images/factory/emmedue-production-hall-thumb.webp",
+      "width": 2000,
+      "height": 900,
+      "srcSet": [
+        {
+          "src": "images/factory/emmedue-production-hall-w640.webp",
+          "width": 640
+        },
+        {
+          "src": "images/factory/emmedue-production-hall-w960.webp",
+          "width": 960
+        },
+        {
+          "src": "images/factory/emmedue-production-hall.webp",
+          "width": 2000
+        }
+      ],
+      "caption": {
+        "ar": "قاعة إنتاج ألواح إمديو، مع معدات التصنيع وألواح البوليسترين والشبك الفولاذي.",
+        "en": "Emmedue panel production hall with manufacturing equipment, EPS panels and steel mesh."
+      }
+    }
+  ]
+}
