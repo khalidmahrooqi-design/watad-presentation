@@ -43,7 +43,7 @@
   --surface-up: #f3f6f9;
   --well: #dce4eb;
   --text: #173044;
-  --muted: #475f70;
+  --muted: #2f4557;
   --line: #b1c1ce;
   --mint: #006b53;
   --azure: #006b9b;
@@ -58,7 +58,7 @@
 }
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 100px;
+  scroll-padding-top: calc(var(--header-height) + 10px);
 }
 body {
   margin: 0;
@@ -292,8 +292,11 @@ summary:focus-visible {
   height: 54px;
   object-fit: contain;
 }
+.brand img.brand-company {
+  width: 122px;
+}
 .brand span {
-  font-size: 0.67rem;
+  font-size: 0.72rem;
   color: var(--muted);
   max-width: 130px;
   line-height: 1.7;
@@ -331,7 +334,7 @@ summary:focus-visible {
 .section-menu {
   position: fixed;
   inset-inline-end: 4vw;
-  top: 95px;
+  top: calc(var(--header-height) + 5px);
   z-index: 55;
   width: min(360px, 92vw);
   max-height: 75vh;
@@ -1577,6 +1580,9 @@ main {
     width: 145px;
     height: 80px;
   }
+  .brand img.brand-company {
+    width: 181px;
+  }
   .brand span {
     max-width: 200px;
   }
@@ -1694,6 +1700,9 @@ main {
   .brand img {
     width: 70px;
     height: 42px;
+  }
+  .brand img.brand-company {
+    width: 95px;
   }
   .header-links {
     display: none;
@@ -2258,6 +2267,33 @@ main {
   object-fit: contain;
   margin: -10px 0 30px;
   opacity: 0.9;
+}
+@media (max-width: 480px) {
+  :root {
+    --header-height: 118px;
+  }
+  .site-header {
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    padding-block: 8px;
+  }
+  .brand {
+    gap: 14px;
+  }
+  .brand img {
+    width: 86px;
+    height: 48px;
+  }
+  .brand img.brand-company {
+    width: 108px;
+  }
+  .header-controls {
+    gap: 14px;
+  }
+  .header-controls .icon-button {
+    width: 38px;
+  }
 }
 :root[data-theme='dark'] .brand img {
   background: #edf3f4;

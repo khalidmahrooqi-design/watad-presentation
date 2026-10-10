@@ -515,7 +515,11 @@ export default function App({ locale, caseId }: PageProps) {
       <a
         className="brand"
         href={`${BASE}${locale}/`}
-        aria-label={locale === 'ar' ? 'وتد، الصفحة الرئيسية' : 'WATAD home'}
+        aria-label={
+          locale === 'ar'
+            ? 'وتد والشركة الأولى للاستثمار والتطوير، الصفحة الرئيسية'
+            : 'WATAD and Al Oula home'
+        }
       >
         <img
           src={asset('brand/watad-approved-w320.webp')}
@@ -524,6 +528,13 @@ export default function App({ locale, caseId }: PageProps) {
           width="100"
           height="56"
           alt="WATAD وتد"
+        />
+        <img
+          className="brand-company"
+          src={asset('brand/al-oula.svg')}
+          width="122"
+          height="54"
+          alt={companyName[locale]}
         />
         <span>
           {locale === 'ar' ? 'نظام بناء. تفاصيل متكاملة.' : 'A building system. Connected details.'}
