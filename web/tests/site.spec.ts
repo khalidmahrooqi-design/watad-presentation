@@ -460,7 +460,9 @@ test('performance charts retain their arithmetic, assembly qualifiers and separa
     );
     await expect(section).not.toContainText(/January 2025|يناير 2025|5\.1%/);
     const comfort = page.locator('#comfort');
-    const comfortSound = comfort.locator('.comfort-metric').filter({ hasText: 'PSM90' });
+    const comfortSound = comfort
+      .locator('.comfort-metric:not(#facade-acoustics)')
+      .filter({ hasText: 'PSM90' });
     await expect(comfortSound).toContainText('45 dB(A)');
     await expect(comfortSound).not.toContainText('%');
     const comfortWall = comfort.locator('.comfort-metric').filter({ hasText: 'PST200' });
