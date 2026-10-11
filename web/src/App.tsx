@@ -70,10 +70,12 @@ function Photo({
   item,
   hero = false,
   locale,
+  sizes,
 }: {
   item: CaseRecord;
   hero?: boolean;
   locale: Locale;
+  sizes?: string;
 }) {
   const widths = [
     ...new Set([
@@ -89,9 +91,10 @@ function Photo({
       src={asset(`media/${item.image}-w${Math.min(1600, item.width)}.webp`)}
       srcSet={widths.map((w) => `${asset(`media/${item.image}-w${w}.webp`)} ${w}w`).join(', ')}
       sizes={
-        hero
+        sizes ??
+        (hero
           ? '(max-width: 760px) 94vw, 58vw'
-          : '(max-width: 760px) 94vw, (max-width: 1200px) 45vw, 30vw'
+          : '(max-width: 760px) 94vw, (max-width: 1200px) 45vw, 30vw')
       }
       width={item.width}
       height={item.height}
@@ -109,6 +112,33 @@ function Heading({ id, locale }: { id: SectionId; locale: Locale }) {
       <h2>{s.title[locale]}</h2>
       <p>{s.body[locale]}</p>
     </div>
+  );
+}
+function CaseLinks({ locale, region }: { locale: Locale; region: 'oman' | 'international' }) {
+  const label =
+    region === 'oman'
+      ? locale === 'ar'
+        ? 'مشاريع في عُمان'
+        : 'Projects in Oman'
+      : locale === 'ar'
+        ? 'مراجع Emmedue الدولية'
+        : 'International Emmedue references';
+  return (
+    <nav className="case-links" aria-label={label}>
+      <h3>{label}</h3>
+      <ul>
+        {cases
+          .filter((item) => item.region === region)
+          .map((item) => (
+            <li key={item.id}>
+              <a href={`${BASE}${locale}/cases/${item.id}/`}>
+                {item.name[locale]}
+                <Icon name="arrow" className="flow-arrow" />
+              </a>
+            </li>
+          ))}
+      </ul>
+    </nav>
   );
 }
 function Concept({ id, locale }: { id: string; locale: Locale }) {
@@ -642,19 +672,55 @@ export default function App({ locale, caseId }: PageProps) {
         </a>
         {header}
         <main id="main" className="case-page">
-          <a
-            className="text-link"
-            href={`${BASE}${locale}/#${localCase.region === 'oman' ? 'oman-cases' : 'international-cases'}`}
-          >
-            <Icon name="previous" className="flow-arrow" />
-            {ui.back[locale]}
-          </a>
+          <nav className="breadcrumbs" aria-label={locale === 'ar' ? 'مسار التصفح' : 'Breadcrumb'}>
+            <ol>
+              <li>
+                <a href={`${BASE}${locale}/`}>{locale === 'ar' ? 'الرئيسية' : 'Home'}</a>
+              </li>
+              <li>
+                <a
+                  href={`${BASE}${locale}/#${localCase.region === 'oman' ? 'oman-cases' : 'international-cases'}`}
+                >
+                  {localCase.region === 'oman'
+                    ? locale === 'ar'
+                      ? 'مشاريع في عُمان'
+                      : 'Projects in Oman'
+                    : locale === 'ar'
+                      ? 'مراجع Emmedue الدولية'
+                      : 'International Emmedue references'}
+                </a>
+              </li>
+              <li aria-current="page">{localCase.name[locale]}</li>
+            </ol>
+          </nav>
           <p className="overline">
             {localCase.country[locale]} · {localCase.use[locale]}
           </p>
           <h1>{localCase.name[locale]}</h1>
-          <Gallery collection={galleryForCase(localCase.id)} locale={locale} />
+          <Gallery
+            collection={galleryForCase(localCase.id)}
+            locale={locale}
+            poster={
+              <Photo
+                item={localCase}
+                hero
+                locale={locale}
+                sizes="(max-width: 760px) 88vw, (max-width: 1500px) 76vw, 1150px"
+              />
+            }
+          />
           <p className="small-note">{localCase.caption[locale]}</p>
+          <nav
+            className="case-system-links"
+            aria-label={locale === 'ar' ? 'تفاصيل النظام' : 'System details'}
+          >
+            <a className="text-link" href={`${BASE}${locale}/#system-layers`}>
+              {locale === 'ar' ? 'تعرّف على طبقات ألواح وتد' : 'Explore WATAD panel layers'}
+            </a>
+            <a className="text-link" href={`${BASE}${locale}/#construction-process`}>
+              {locale === 'ar' ? 'شاهد مراحل تركيب الألواح' : 'Watch panel installation'}
+            </a>
+          </nav>
           <div className="case-context">
             <span>{localCase.region === 'oman' ? ui.local[locale] : ui.international[locale]}</span>
             <a className="pill primary" href={contactHref}>
@@ -1371,6 +1437,7 @@ export default function App({ locale, caseId }: PageProps) {
         <section id="oman-cases" className="section" data-accent="mint">
           <Heading id="oman-cases" locale={locale} />
           <GalleryBrowser locale={locale} region="oman" />
+          <CaseLinks locale={locale} region="oman" />
         </section>
         <section id="international-cases" className="section global" data-accent="violet">
           <Heading id="international-cases" locale={locale} />
@@ -1387,6 +1454,7 @@ export default function App({ locale, caseId }: PageProps) {
             }
           />
           <GalleryBrowser locale={locale} region="international" />
+          <CaseLinks locale={locale} region="international" />
           <p className="reference-note">{ui.international[locale]} · Emmedue</p>
         </section>
         <section id="sustainability" className="section sustainability" data-accent="mint">

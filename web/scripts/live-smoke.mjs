@@ -1,9 +1,11 @@
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { legacyRoutes, prefixAliases } from './legacy-routes.mjs';
+import { auditSeo } from './seo-check.mjs';
 
 const site = process.env.WATAD_URL || 'https://www.aloulaidc.om/';
 const expected = process.env.WATAD_EXPECT_SHA;
+const seoResponses = new Map();
 for (const route of [
   '',
   'ar/',
@@ -22,6 +24,7 @@ for (const route of [
   if (!r.ok) throw Error(`${route}: HTTP ${r.status}`);
   if (route === '' || route.endsWith('/')) {
     const text = await r.text();
+    seoResponses.set(route, text);
     if (route !== '') {
       if (!text.includes('property="og:image"') || !text.includes('rel="canonical"'))
         throw Error(`Missing static metadata: ${route}`);
@@ -94,6 +97,24 @@ for (const route of [
   }
   console.log(`Live: ${route || 'root'} ${r.status}`);
 }
+const seo = await auditSeo({
+  site,
+  readText: async (route) => {
+    if (seoResponses.has(route)) return seoResponses.get(route);
+    const response = await fetch(new URL(`${route}?check=${Date.now()}`, site));
+    if (!response.ok) throw Error(`SEO ${route}: HTTP ${response.status}`);
+    const contentType = response.headers.get('content-type') || '';
+    if (
+      (route === 'robots.txt' && !contentType.includes('text/plain')) ||
+      (route === 'sitemap.xml' && !contentType.includes('xml')) ||
+      (route.endsWith('/') && !contentType.includes('text/html'))
+    )
+      throw Error(`SEO ${route}: unexpected content type ${contentType}`);
+    return response.text();
+  },
+});
+if (seo.errors.length) throw Error(seo.errors.join('\n'));
+console.log(`Live: ${seo.pages} canonical pages passed crawler and structured-data checks.`);
 for (const [pathname, target] of Object.entries({ ...legacyRoutes, ...prefixAliases })) {
   const response = await fetch(new URL(`${pathname}/?check=${Date.now()}`, site));
   if (!response.ok) throw Error(`Legacy link ${pathname}: HTTP ${response.status}`);

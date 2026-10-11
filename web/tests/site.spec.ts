@@ -223,7 +223,10 @@ test('all case collections stay on the page with arrows and nearby previews', as
         : 'Meisters Uncorked Restaurant in Laguna, Philippines — an international commercial system reference.',
     );
   }
-  await page.getByRole('link', { name: 'Back to presentation' }).click();
+  await page
+    .getByRole('navigation', { name: 'Breadcrumb' })
+    .getByRole('link', { name: 'International Emmedue references' })
+    .click();
   await expect(page.locator('section')).toHaveCount(17);
   await page.locator('details').first().locator('summary').click();
   await expect(page.locator('details').first()).toHaveAttribute('open', '');

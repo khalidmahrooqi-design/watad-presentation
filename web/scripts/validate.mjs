@@ -3,6 +3,7 @@ import path from 'node:path';
 import sharp from 'sharp';
 import { createHash } from 'node:crypto';
 import { legacyRoutes, prefixAliases } from './legacy-routes.mjs';
+import { auditSeo } from './seo-check.mjs';
 const root = path.resolve('dist');
 const reportManifest = JSON.parse(await fs.readFile('public/reports/manifest.json', 'utf8'));
 const approvedReportFiles = new Set(reportManifest.map((report) => report.file));
@@ -135,6 +136,12 @@ async function walk(dir) {
   }
 }
 await walk(root);
+const seo = await auditSeo({
+  readText: (route) =>
+    fs.readFile(path.join(root, route.endsWith('/') ? route + 'index.html' : route), 'utf8'),
+});
+errors.push(...seo.errors);
+console.log(`SEO: inspected ${seo.pages} canonical pages, crawl discovery and language pairs.`);
 for (const route of Object.keys(redirects))
   if (!checkedRedirects.has(route)) errors.push(`Missing checked redirect: ${route}`);
 const webmanifest = JSON.parse(await fs.readFile(path.join(root, 'site.webmanifest'), 'utf8'));

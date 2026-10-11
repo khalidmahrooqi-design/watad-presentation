@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { render, cases, sections, companyName, BASE, SITE, ORIGIN } from '../.ssr/render.js';
+import { render, cases, companyName, BASE, SITE, ORIGIN } from '../.ssr/render.js';
 import { legacyRoutes, prefixAliases } from './legacy-routes.mjs';
 const out = path.resolve('dist');
 const manifest = JSON.parse(await fs.readFile(path.join(out, '.vite/manifest.json'), 'utf8'));
@@ -19,20 +19,34 @@ const routes = [
 for (const locale of ['ar', 'en'])
   for (const c of cases) routes.push({ route: `${locale}/cases/${c.id}/`, locale, caseId: c.id });
 const boot = `try{var t=localStorage.getItem('watad-theme')==='light'?'light':'dark';document.documentElement.dataset.theme=t;document.querySelector('meta[name="theme-color"]').content=t==='light'?'#e8edf2':'#17212b';document.documentElement.dataset.motion=(localStorage.getItem('watad-motion')==='paused'||matchMedia('(prefers-reduced-motion:reduce)').matches)?'paused':'active'}catch(e){}`;
+const homeMetadata = {
+  ar: {
+    title: 'نظام وتد للبناء في عُمان | ألواح معزولة بتقنية Emmedue',
+    description:
+      'اكتشف نظام وتد للبناء بألواح معزولة بتقنية Emmedue في عُمان. تعرّف على المصنع والعناصر والتركيب والمشاريع وتقارير الاختبار لدى الشركة الأولى للاستثمار والتطوير.',
+  },
+  en: {
+    title: 'WATAD Insulated Building Panels in Oman | Al Oula',
+    description:
+      'Explore WATAD insulated building panels in Oman from Al Oula Development & Investment: panel types, installation, local projects and technical test reports.',
+  },
+};
+const pageImage = (c = cases[0]) => SITE + `media/${c.image}-w${Math.min(1600, c.width)}.webp`;
 for (const record of routes) {
   const { locale, caseId, route } = record;
   const c = cases.find((x) => x.id === caseId);
   const canonical = SITE + (caseId ? `${locale}/cases/${caseId}/` : `${locale}/`);
   const title = c
-    ? `${c.name[locale]} | WATAD ${locale === 'ar' ? 'وتد' : 'by Al Oula'}`
-    : locale === 'ar'
-      ? `وتد | ${sections[0].title.ar} — ${companyName.ar}، عُمان`
-      : 'WATAD | Build for lasting comfort — Al Oula, Oman';
-  const description = c ? c.caption[locale] : sections[0].body[locale];
+    ? `${c.name[locale]} | ${locale === 'ar' ? 'وتد WATAD' : 'WATAD'}`
+    : homeMetadata[locale].title;
+  const description = c ? c.caption[locale] : homeMetadata[locale].description;
   const ar = SITE + `ar/${caseId ? `cases/${caseId}/` : ''}`,
     en = SITE + `en/${caseId ? `cases/${caseId}/` : ''}`;
   const og = SITE + `brand/og-${locale}${caseId ? '-' + caseId : ''}.webp`;
   const siteName = locale === 'ar' ? `وتد | ${companyName.ar}` : 'WATAD by Al Oula';
+  const representative = c || cases[0];
+  const imageWidth = Math.min(1600, representative.width);
+  const imageId = canonical + '#primaryimage';
   const jsonld = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -45,6 +59,15 @@ for (const record of routes) {
         email: 'info@aloulaidc.om',
         logo: SITE + 'brand/al-oula.svg',
         address: { '@type': 'PostalAddress', addressCountry: 'OM' },
+        brand: { '@id': SITE + '#watad' },
+      },
+      {
+        '@type': 'Brand',
+        '@id': SITE + '#watad',
+        name: 'WATAD',
+        alternateName: 'وتد',
+        logo: SITE + 'brand/watad-approved.webp',
+        url: SITE,
       },
       {
         '@type': 'WebSite',
@@ -62,7 +85,54 @@ for (const record of routes) {
         description,
         inLanguage: locale,
         isPartOf: { '@id': SITE + '#website' },
+        about: { '@id': SITE + '#watad' },
+        publisher: { '@id': SITE + '#organization' },
+        primaryImageOfPage: { '@id': imageId },
+        ...(c ? { breadcrumb: { '@id': canonical + '#breadcrumb' } } : {}),
       },
+      {
+        '@type': 'ImageObject',
+        '@id': imageId,
+        contentUrl: pageImage(representative),
+        url: pageImage(representative),
+        caption: representative.caption[locale],
+        width: imageWidth,
+        height: Math.round((imageWidth * representative.height) / representative.width),
+      },
+      ...(c
+        ? [
+            {
+              '@type': 'BreadcrumbList',
+              '@id': canonical + '#breadcrumb',
+              itemListElement: [
+                {
+                  '@type': 'ListItem',
+                  position: 1,
+                  name: locale === 'ar' ? 'الرئيسية' : 'Home',
+                  item: SITE + locale + '/',
+                },
+                {
+                  '@type': 'ListItem',
+                  position: 2,
+                  name:
+                    c.region === 'oman'
+                      ? locale === 'ar'
+                        ? 'مشاريع في عُمان'
+                        : 'Projects in Oman'
+                      : locale === 'ar'
+                        ? 'مراجع Emmedue الدولية'
+                        : 'International Emmedue references',
+                  item:
+                    SITE +
+                    locale +
+                    '/#' +
+                    (c.region === 'oman' ? 'oman-cases' : 'international-cases'),
+                },
+                { '@type': 'ListItem', position: 3, name: c.name[locale], item: canonical },
+              ],
+            },
+          ]
+        : []),
     ],
   };
   const body = await render({ locale, ...(caseId ? { caseId } : {}) });
@@ -71,7 +141,7 @@ for (const record of routes) {
 <title>${esc(title)}</title><meta name="description" content="${esc(description)}"/><meta name="robots" content="index,follow,max-image-preview:large"/>
 <meta name="theme-color" content="#17212b"/>
 <meta name="application-name" content="WATAD"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-title" content="WATAD"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/><meta name="format-detection" content="telephone=no"/>
-<link rel="canonical" href="${canonical}"/><link rel="alternate" hreflang="ar" href="${ar}"/><link rel="alternate" hreflang="en" href="${en}"/><link rel="alternate" hreflang="x-default" href="${SITE}${caseId ? 'ar/cases/' + caseId + '/' : ''}"/>
+<link rel="canonical" href="${canonical}"/><link rel="alternate" hreflang="ar" href="${ar}"/><link rel="alternate" hreflang="en" href="${en}"/><link rel="alternate" hreflang="x-default" href="${ar}"/>
 <meta property="og:type" content="website"/><meta property="og:site_name" content="${esc(siteName)}"/><meta property="og:title" content="${esc(title)}"/><meta property="og:description" content="${esc(description)}"/><meta property="og:url" content="${canonical}"/><meta property="og:locale" content="${locale === 'ar' ? 'ar_OM' : 'en_GB'}"/><meta property="og:locale:alternate" content="${locale === 'ar' ? 'en_GB' : 'ar_OM'}"/><meta property="og:image" content="${og}"/><meta property="og:image:secure_url" content="${og}"/><meta property="og:image:type" content="image/webp"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image:alt" content="${esc(title)}"/>
 <meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="${esc(title)}"/><meta name="twitter:description" content="${esc(description)}"/><meta name="twitter:image" content="${og}"/><meta name="twitter:image:alt" content="${esc(title)}"/>
 <link rel="icon" href="${BASE}brand/favicon.svg" type="image/svg+xml"/><link rel="icon" href="${BASE}brand/favicon.ico" sizes="any"/><link rel="icon" href="${BASE}brand/icon-32.png" type="image/png" sizes="32x32"/><link rel="icon" href="${BASE}brand/icon-16.png" type="image/png" sizes="16x16"/><link rel="apple-touch-icon" href="${BASE}brand/icon-180.png" sizes="180x180"/><link rel="mask-icon" href="${BASE}brand/pinned-tab.svg" color="#17212b"/><link rel="manifest" href="${BASE}site.webmanifest"/>
@@ -110,12 +180,16 @@ const sitemap = routes
   .filter((r) => r.route)
   .map(
     (r) =>
-      `<url><loc>${SITE + r.route}</loc><xhtml:link rel="alternate" hreflang="ar" href="${SITE + 'ar/' + (r.caseId ? 'cases/' + r.caseId + '/' : '')}"/><xhtml:link rel="alternate" hreflang="en" href="${SITE + 'en/' + (r.caseId ? 'cases/' + r.caseId + '/' : '')}"/></url>`,
+      `<url><loc>${SITE + r.route}</loc><xhtml:link rel="alternate" hreflang="ar" href="${SITE + 'ar/' + (r.caseId ? 'cases/' + r.caseId + '/' : '')}"/><xhtml:link rel="alternate" hreflang="en" href="${SITE + 'en/' + (r.caseId ? 'cases/' + r.caseId + '/' : '')}"/><image:image><image:loc>${pageImage(cases.find((c) => c.id === r.caseId))}</image:loc></image:image></url>`,
   )
   .join('');
 await fs.writeFile(
   path.join(out, 'sitemap.xml'),
-  `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">${sitemap}</urlset>`,
+  `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">${sitemap}</urlset>`,
+);
+await fs.writeFile(
+  path.join(out, 'robots.txt'),
+  `User-agent: *\nAllow: /\n\nSitemap: ${SITE}sitemap.xml\n`,
 );
 await fs.writeFile(
   path.join(out, '404.html'),

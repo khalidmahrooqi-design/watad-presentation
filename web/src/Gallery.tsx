@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { asset, type Locale } from './content';
 import { Icon } from './icons';
 import collectionData from './gallery-data.json';
@@ -33,7 +33,15 @@ export const galleryForCase = (caseId: string) => {
   };
   return collections.find((c) => c.name.en === names[caseId]) || collections[0];
 };
-export function Gallery({ collection, locale }: { collection: Collection; locale: Locale }) {
+export function Gallery({
+  collection,
+  locale,
+  poster,
+}: {
+  collection: Collection;
+  locale: Locale;
+  poster?: ReactNode;
+}) {
   const [images, setImages] = useState<ImageRecord[]>(cache.get(collection.id) || []);
   const [index, setIndex] = useState(0);
   const [error, setError] = useState(false);
@@ -136,7 +144,10 @@ export function Gallery({ collection, locale }: { collection: Collection; locale
           {collection.count} {ar ? 'صورة' : 'photos'}
         </span>
       </div>
-      <div className="gallery-frame" aria-busy={!loaded && !imageError && !error}>
+      <div
+        className="gallery-frame"
+        aria-busy={!loaded && !imageError && !error && (!poster || near)}
+      >
         {photo ? (
           <img
             key={`${photo.id}-${imageAttempt}`}
@@ -154,11 +165,13 @@ export function Gallery({ collection, locale }: { collection: Collection; locale
               `${collection.name[locale]} · ${collection.country[locale]} · ${ar ? 'صورة' : 'Photo'} ${index + 1}`
             }
           />
+        ) : poster ? (
+          <div className="gallery-poster">{poster}</div>
         ) : (
           <img
             className="gallery-cover"
             src={asset(collection.cover)}
-            alt=""
+            alt={`${collection.name[locale]} — ${collection.country[locale]}`}
             width="240"
             height="150"
             loading="lazy"
@@ -179,32 +192,34 @@ export function Gallery({ collection, locale }: { collection: Collection; locale
             </button>
           </div>
         )}
-        {!loaded && !error && !imageError && (
+        {!loaded && !error && !imageError && (!poster || near) && (
           <span className="gallery-loading" role="status">
             {ar ? 'تحميل الصور…' : 'Loading photos…'}
           </span>
         )}
-        <div className="gallery-controls">
-          <button
-            className="icon-button"
-            disabled={images.length < 2}
-            onClick={() => select(index - 1)}
-            aria-label={ar ? 'الصورة السابقة' : 'Previous photo'}
-          >
-            <Icon name="previous" className="flow-arrow" />
-          </button>
-          <span aria-live="polite" aria-atomic="true">
-            {images.length ? index + 1 : '—'} / {collection.count}
-          </span>
-          <button
-            className="icon-button"
-            disabled={images.length < 2}
-            onClick={() => select(index + 1)}
-            aria-label={ar ? 'الصورة التالية' : 'Next photo'}
-          >
-            <Icon name="arrow" className="flow-arrow" />
-          </button>
-        </div>
+        {(!poster || images.length > 0) && (
+          <div className="gallery-controls">
+            <button
+              className="icon-button"
+              disabled={images.length < 2}
+              onClick={() => select(index - 1)}
+              aria-label={ar ? 'الصورة السابقة' : 'Previous photo'}
+            >
+              <Icon name="previous" className="flow-arrow" />
+            </button>
+            <span aria-live="polite" aria-atomic="true">
+              {images.length ? index + 1 : '—'} / {collection.count}
+            </span>
+            <button
+              className="icon-button"
+              disabled={images.length < 2}
+              onClick={() => select(index + 1)}
+              aria-label={ar ? 'الصورة التالية' : 'Next photo'}
+            >
+              <Icon name="arrow" className="flow-arrow" />
+            </button>
+          </div>
+        )}
       </div>
       {photo?.caption && (
         <p className="gallery-caption" aria-live="polite">

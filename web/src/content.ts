@@ -68,11 +68,14 @@ export const performance = {
 export const sections = [
   {
     id: 'hero',
-    title: bi('بناء لراحة تدوم', 'Build for lasting comfort'),
+    title: bi(
+      'نظام وتد للبناء بألواح معزولة في عُمان',
+      'WATAD insulated panel building system in Oman',
+    ),
     short: bi('البداية', 'Welcome'),
     body: bi(
-      'تقنية إيطالية معتمدة عالمياً منذ أكثر من ٤٥ سنة، وتُصنّع في عُمان. اكتشف نظام وتد: قلب عازل، وشبك فولاذي، وطبقات خرسانية مسلحة من أجل متانة تدوم لعشرات السنين وعزل حراري يوفر الراحة والمال، بمرونة في التصميم تلبي جميع الأذواق والاستخدامات.',
-      'Italian technology. Manufacturing in Oman. Discover WATAD: an insulating core, steel mesh and concrete layers that work with your project design.',
+      'ألواح بتقنية Emmedue الإيطالية تُصنّع في مصنع وتد بمدينة خزائن الاقتصادية في بركاء. يجمع النظام قلباً عازلاً من EPS وشبكاً فولاذياً وروابط بين الوجهين، وتُستكمل الألواح بطبقات الخرسانة في الموقع وفق مخططات المشروع.',
+      'Panels made with Italian Emmedue technology at the WATAD factory in Khazaen Economic City, Barka, Oman. The system combines an EPS insulating core, steel mesh and through-panel connectors, with concrete layers applied on site to the project drawings.',
     ),
   },
   {
@@ -475,7 +478,7 @@ export const cases = [
     id: 'oman-interior',
     country: bi('عُمان', 'Oman'),
     region: 'oman',
-    name: bi('مساحة سكنية في الأنصب', 'Residential interior in Al Ansab'),
+    name: bi('فيلا الأنصب في عُمان', 'Al Ansab villa in Oman'),
     image: 'oman-interior',
     width: 2056,
     height: 1536,
@@ -489,7 +492,7 @@ export const cases = [
     id: 'oman-installation',
     country: bi('عُمان', 'Oman'),
     region: 'oman',
-    name: bi('الألواح في مرحلة التركيب', 'Panels during installation'),
+    name: bi('تركيب ألواح وتد في عُمان', 'WATAD panel installation in Oman'),
     image: 'oman-installation',
     width: 4032,
     height: 3024,
@@ -503,7 +506,7 @@ export const cases = [
     id: 'saudi-chalet',
     country: bi('السعودية', 'Saudi Arabia'),
     region: 'international',
-    name: bi('منحنيات في مشروع ضيافة', 'Curved forms in hospitality'),
+    name: bi('شاليهات أليان في السعودية', 'Alian Chalet in Saudi Arabia'),
     image: 'saudi-chalet',
     width: 1448,
     height: 1086,
@@ -517,7 +520,7 @@ export const cases = [
     id: 'philippines-restaurant',
     country: bi('الفلبين', 'Philippines'),
     region: 'international',
-    name: bi('تطبيق تجاري في لاغونا', 'Commercial application in Laguna'),
+    name: bi('مطعم Meisters Uncorked في لاغونا', 'Meisters Uncorked Restaurant in Laguna'),
     image: 'philippines-restaurant',
     width: 2048,
     height: 1365,
@@ -531,7 +534,7 @@ export const cases = [
     id: 'panama-resort',
     country: bi('بنما', 'Panama'),
     region: 'international',
-    name: bi('مرجع ضيافة في بنما', 'Hospitality reference in Panama'),
+    name: bi('منتجع Dreams Playa Bonita في بنما', 'Dreams Resort Playa Bonita in Panama'),
     image: 'panama-resort',
     width: 1200,
     height: 800,
@@ -545,7 +548,7 @@ export const cases = [
     id: 'qatar-gardens',
     country: bi('قطر', 'Qatar'),
     region: 'international',
-    name: bi('مرحلة تنفيذ في أم صلال', 'Construction stage in Umm Salal'),
+    name: bi('حدائق المهنا في أم صلال، قطر', 'Al Mohanna Gardens in Umm Salal, Qatar'),
     image: 'qatar-gardens',
     width: 2592,
     height: 1944,
@@ -558,6 +561,20 @@ export const cases = [
 ] as const;
 export type CaseRecord = (typeof cases)[number];
 export const faqs = [
+  {
+    q: bi('ما هو نظام وتد للبناء؟', 'What is the WATAD building system?'),
+    a: bi(
+      'وتد نظام بناء بألواح تتكوّن من قلب عازل من EPS وشبك فولاذي وروابط بين الوجهين. تُركّب الألواح في الموقع وتُستكمل بطبقات الخرسانة وفق مخططات المشروع.',
+      'WATAD is a panel building system with an EPS insulating core, steel mesh and through-panel connectors. Panels are assembled on site and completed with concrete layers to the project drawings.',
+    ),
+  },
+  {
+    q: bi('أين تُصنّع ألواح وتد؟', 'Where are WATAD panels manufactured?'),
+    a: bi(
+      `تُصنّع ألواح وتد بتقنية Emmedue الإيطالية في مصنع ${companyName.ar} بمدينة خزائن الاقتصادية في بركاء، عُمان.`,
+      `WATAD panels use Italian Emmedue technology and are manufactured at the ${companyName.en} factory in Khazaen Economic City, Barka, Oman.`,
+    ),
+  },
   {
     q: bi('هل يناسب النظام مشروعي؟', 'Will the system suit my project?'),
     a: bi(
